@@ -31,7 +31,7 @@ Al utilizar equals(), el sistema evaluará correctamente si las cadenas de carac
 
 ### Issue 2: Logic and code should not be duplicated (DRY Principle)
 
-Reporte de la issue:
+**Reporte de la issue:**
 
 Al analizar el código a mano hemos comprobado un mal olor bastante notable en ciertas partes: existen bloques de código idénticos repartidos en diferentes métodos de la clase AccountService (específicamente entre las líneas 102-116 y 151-165). 
 SonarQube y otros analizadores estáticos marcan esto como una violación del principio DRY (Don't Repeat Yourself).
@@ -47,7 +47,7 @@ Duplicación de Código (Bloque de Depósito): Los métodos deposit(String, doub
 No es un falso positivo porque la duplicación no es accidental ni necesaria por restricciones técnicas. 
 Es el resultado de un "Copy-Paste" que introduce rigidez en el diseño y aumenta el riesgo de errores de sincronización de lógica en futuras modificaciones.
 
-**Reporte de la issue**
+**Refactorización**
 
 Creamos una nueva función privada para que los métodos deposit la llamen y no necesiten hacer bloques de código repetidos
 ```java
@@ -79,7 +79,7 @@ El código se reduce drásticamente, ya que el método deposit con 2 argumentos 
 
 ### Issue 3: Define a constant instead of duplicating this literal "Deposit Confirmation" 4 times.
 
-**Reporte de la issue**
+**Reporte de la issue:**
 En el análisis realizado con SonarQube se ha detectado un problema de calidad que indica:
 “Define a constant instead of duplicating this literal "Deposit Confirmation" 4 times” (Define una constante en lugar de duplicar este literal "Deposit Confirmation" 4 veces).
 A continuación se muestra la captura de pantalla de la issue reportada por SonarQube, donde se observa la repetición de la misma cadena de texto en diferentes llamadas a métodos (como emailService y smsService) dentro de la clase AccountService:
