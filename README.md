@@ -15,13 +15,13 @@
 
 ### **Participación de Miembros en la Práctica 1**
 
-#### **Alumno 1 - [Nombre Completo]**
+#### **Alumno 1 - [Rodrigo Wiznez Valiente]**
 
 [Descripción de las tareas y responsabilidades principales del alumno en el proyecto]
 
 | Nº    | Commits      |
 |:------------: |:------------:|
-|1| [Issue detectada](URL_commit_1)  |
+|1| [Issue detectada](https://github.com/Alexx019/ais-2026-grupo-A/commit/696644546e78c998a2424253897dda432fbe73e1)  |
 |2| [Prueba unitaria implementada](URL_commit_2)  |
 |3| [Refactorización implementada](URL_commit_3)  |
 |4| [Caso de TDD implementado](URL_commit_4)  |
