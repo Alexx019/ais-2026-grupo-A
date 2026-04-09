@@ -35,7 +35,7 @@
 
 | Nº    | Commits      |
 |:------------: |:------------:|
-|1| [Issue detectada](URL_commit_1)  |
+|1| [Issue detectada]([URL_commit_1](https://github.com/Alexx019/ais-2026-grupo-A/tree/c0e4988782f4c8d181b291447f3ce59aeeb253c3))  |
 |2| [Prueba unitaria implementada](URL_commit_2)  |
 |3| [Refactorización implementada](URL_commit_3)  |
 |4| [Caso de TDD implementado](URL_commit_4)  |
