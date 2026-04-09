@@ -48,12 +48,15 @@ No es un falso positivo porque la duplicación no es accidental ni necesaria por
 Es el resultado de un "Copy-Paste" que introduce rigidez en el diseño y aumenta el riesgo de errores de sincronización de lógica en futuras modificaciones.
 
 **Reporte de la issue**
+
 Creamos una nueva función privada para que los métodos deposit la llamen y no necesiten hacer bloques de código repetidos
+```java
 private void sendDepositNotification(Account account, double amount) {
-User user = account.getUser();
-User.NotificationType notifType = user.getNotificationType();
+    User user = account.getUser();
+    User.NotificationType notifType = user.getNotificationType();
     String subject = "Deposit Confirmation";
     double balance = account.getBalance();
+
     if (notifType == User.NotificationType.EMAIL) {
         emailService.sendNotification(
                 user,
@@ -68,7 +71,7 @@ User.NotificationType notifType = user.getNotificationType();
                 String.format("Deposit: %.2f EUR. Balance: %.2f EUR", amount, balance));
     }
 }
-
+```
 Ahora, tanto en el depósito con descripción como en el rápido, solo tienes que llamar al método anterior.
 El código se reduce drásticamente, ya que el método deposit con 2 argumentos simplemente hace una llamada a la función deposit con 3 parámetros.
 
