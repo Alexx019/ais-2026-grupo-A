@@ -92,6 +92,9 @@ El uso repetido de cadenas de texto literales a lo largo del código viola el pr
 Consideramos que se trata de un issue real, específicamente un code smell que afecta negativamente a la mantenibilidad del software (marcada como "High" en SonarQube).
 
 **Refactorización**
+Previamente teníamos en el código 4 veces "Deposit Confirmation" en las llamadas a los servicios de notificación en los métodos deposit(). Para cumplir el principio DRY declaramos la constante DEPOSIT_CONFIRMATION_SUBJECT y sustituimos los 4 "Deposit Confirmation" por la constante creada.
+
+![refactor3](img/capturas/Captura_Refactor3.png)
 
 ### Issue 4: Remove this unused "seccondAccount" local variable.
 
