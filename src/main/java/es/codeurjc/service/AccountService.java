@@ -20,8 +20,6 @@ import java.util.List;
 @Service
 public class AccountService {
 
-    private static final String DEPOSIT_CONFIRMATION_SUBJECT = "Deposit Confirmation";
-
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
     private final EmailNotificationService emailService;
