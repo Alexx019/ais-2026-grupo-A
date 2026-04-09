@@ -1,14 +1,15 @@
 # Praćtica 1 - Control de calidad de una aplicación web 
 
-**Grupo X**
+**Grupo A**
 
 ## Miembros del Equipo
 | Nombre y Apellidos | Correo URJC | Usuario GitHub |
 |:--- |:--- |:--- |
-| [Nombre 1] | [email1]@alumnos.urjc.es | [User1] |
-| [Nombre 2] | [email2]@alumnos.urjc.es | [User2] |
-| [Nombre 3] | [email3]@alumnos.urjc.es | [User3] |
-| [Nombre 4] | [email4]@alumnos.urjc.es | [User4] |
+| Rodrigo Wiznez Valiente | r.wiznez.2022@alumnos.urjc.es | rwiznezvaliente-ui |
+| Alvaro Gonzalez Gonzalez | a.gonzalezgo.2022@alumnos.urjc.es | alvarognnzlez |
+| Pablo Cristina Jiménez | p.cristina.2022@alumnos.urjc.es | pablooo13 |
+| Vicente Navas Martínez | v.navas.2022@alumnos.urjc.es | vicentenavasmar |
+| Alejandro Arias Souto | a.arias.2022@alumnos.urjc.es | Alexx019 |
 
 ---
 
