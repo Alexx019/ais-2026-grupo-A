@@ -77,4 +77,18 @@ Consideramos que se trata de un issue real, específicamente un code smell que a
 
 *Refactorización*
 
+### Issue 5: Non-descriptive Naming Conventions.
 
+En el análisis realizado con SonarQube se ha detectado un problema de mantenibilidad que indica:
+“Los nombres de variables y métodos deben ser claros y descriptivos para facilitar la comprensión del código”.
+A continuación se muestra la captura de pantalla de la issue reportada por SonarQube en la clase AccountService:
+
+![issue5](img/capturas/img_issue5.png)
+
+**Explicación de los alumnos del mal olor detectado:**
+Se han identificado dos deficiencias principales relacionadas con la semántica del código:
+- Variables de una sola letra: En el método transfer, se utilizan nombres como m y o. Esto oscurece la lógica de negocio, ya que el desarrollador debe deducir por el contexto cuál es la cuenta que emite los fondos y cuál la que los recibe.
+- Abreviaturas no estándar: El método encargado de la eliminación de cuentas utiliza el nombre rm. Aunque es una abreviatura común en entornos de terminal (Unix), en el desarrollo de servicios con Java y Spring se considera una mala práctica, prefiriéndose nombres que utilicen verbos completos y descriptivos.
+
+Consideramos que se trata de un issue real de calidad. La falta de claridad en los nombres aumenta la "carga cognitiva" necesaria para entender el flujo de una transferencia bancaria, lo que puede derivar en errores de mantenimiento o en una curva de aprendizaje más lenta para nuevos miembros del equipo.
+**Refactorización**
