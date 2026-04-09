@@ -294,3 +294,60 @@ return new LoanEvaluationResult(true, "Aprobado", request.getAmount(), interestR
 **Captura de que TODOS los test PASAN**
 
 ![img_TDD_test8.png](img/capturas/img_TDD_test8.png)
+
+### Test 9: Debe rechazar si la cuota supera el 40% de los ingresos mensuales
+
+**INPUT y OUTPUT**: Préstamo de 20000€ a 24 meses, saldo de 5000€, ingresos mensuales de 2000€ y Euribor al 3.0% -> "Cuota demasiado alta"
+
+**Código de test**
+
+```java
+@Test
+    void shouldRejectWhenPaymentExceedsIncomeLimit() {
+        Mockito.when(euriborServiceMock.getEuribor()).thenReturn(3.0);
+        LoanRequest request = new LoanRequest();
+        request.setAmount(20000);
+        request.setTermMonths(24);
+        request.setCustomerBalance(5000);
+        request.setMonthlyIncome(2000);
+
+        LoanEvaluationResult result = algorithm.evaluate(request);
+
+        assertFalse(result.isApproved());
+        assertEquals("Cuota demasiado alta", result.getReason());
+    }
+```
+
+**Mensaje del test añadido que NO PASA**
+
+```log
+org.opentest4j.AssertionFailedError: 
+Expected :false
+Actual   :true
+```
+
+**Código mínimo para que el test pase**
+
+Se añade una condición que comprueba si la cuota mensual calculada supera el 40% de los ingresos mensuales del cliente. Si lo supera, se rechaza el préstamo con el mensaje: "Cuota demasiado alta".
+
+```java
+if (monthlyPayment > request.getMonthlyIncome() * 0.40) {
+    return new LoanEvaluationResult(false, "Cuota demasiado alta");
+}
+```
+
+**Captura de que TODOS los test NO PASAN**
+
+![NoPasan](img/capturas/img_TDD_NoPasan.png)
+
+**Refactorización**
+
+Se añade setMonthlyIncome(3000) a los tests 6, 7 y 8 porque al introducir la regla del 40% de ingresos, los préstamos sin ingresos definidos (0€ por defecto) eran rechazados.
+
+```java
+request.setMonthlyIncome(3000);
+```
+**Captura de que TODOS los tests PASAN tras la refactorización**
+
+![Pasan](img/capturas/img_TDD_Pasan.png)
+
