@@ -30,4 +30,26 @@ class LoanApprovalAlgorithmTest {
         assertFalse(result.isApproved());
         assertEquals("Cantidad fuera de rango", result.getReason());
     }
+
+    @Test
+    void shouldRejectWhenTermMonthsAreTooLow() {
+        LoanRequest request = new LoanRequest();
+        request.setAmount(1001);
+        request.setTermMonths(5);
+        LoanEvaluationResult result = algorithm.evaluate(request);
+
+        assertFalse(result.isApproved());
+        assertEquals("Plazo no válido", result.getReason());
+    }
+
+    @Test
+    void shouldRejectWhenTermMonthsAreTooHigh() {
+        LoanRequest request = new LoanRequest();
+        request.setAmount(1001);
+        request.setTermMonths(200);
+        LoanEvaluationResult result = algorithm.evaluate(request);
+
+        assertFalse(result.isApproved());
+        assertEquals("Plazo no válido", result.getReason());
+    }
 }
