@@ -71,15 +71,15 @@
 
 ---
 
-#### **Alumno 5 - [Nombre Completo]**
+#### **Alumno 5 - Alejandro Arias Souto**
 
 [Descripción de las tareas y responsabilidades principales del alumno en el proyecto]
 
 | Nº    | Commits      |
 |:------------: |:------------:|
-|1| [Issue detectada](URL_commit_1)  |
-|2| [Prueba unitaria implementada](URL_commit_2)  |
-|3| [Refactorización implementada](URL_commit_3)  |
+|1| [Issue detectada](https://github.com/Alexx019/ais-2026-grupo-A/commit/86918a062fb594b488bc13cf0b26cc4d99c95a39)  |
+|2| [Prueba unitaria implementada](https://github.com/Alexx019/ais-2026-grupo-A/commit/6c2cb5fc47f31cfb14d1e93f06b81137d6b7f422)  |
+|3| [Refactorización implementada](https://github.com/Alexx019/ais-2026-grupo-A/commit/2d343120bbdb8c08f5b228a8c4aae2702aeccbf1)  |
 |4| [Caso de TDD implementado](URL_commit_4)  |
 |5| [Prueba de sistema implementada](URL_commit_5)  |
 
