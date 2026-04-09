@@ -57,13 +57,13 @@
 
 ---
 
-#### **Alumno 4 - [Nombre Completo]**
+#### **Alumno 4 - Vicente Navas Martinez**
 
 [Descripción de las tareas y responsabilidades principales del alumno en el proyecto]
 
 | Nº    | Commits      |
 |:------------: |:------------:|
-|1| [Issue detectada](URL_commit_1)  |
+|1| [Issue detectada](https://github.com/Alexx019/ais-2026-grupo-A/commit/23ca1e2169ebed6723915f874f154bbde426fc75)  |
 |2| [Prueba unitaria implementada](URL_commit_2)  |
 |3| [Refactorización implementada](URL_commit_3)  |
 |4| [Caso de TDD implementado](URL_commit_4)  |
