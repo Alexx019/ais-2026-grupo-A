@@ -54,8 +54,6 @@ public class AccountServiceTest {
         MockitoAnnotations.openMocks(this);
     }
 
-    // Helpers
-
     private User buildEmailUser() {
         User user = new User();
         user.setNotificationType(User.NotificationType.EMAIL);
@@ -77,7 +75,6 @@ public class AccountServiceTest {
         account.setUser(user);
         return account;
     }
-
 
     @Test
     void testCreateAccount_ReturnsNewAccount() {
@@ -136,7 +133,6 @@ public class AccountServiceTest {
 
         assertEquals(accounts, result);
     }
-
 
     @Test
     void testDeposit_WithValidAmount_UpdatesBalanceAndSendsEmail() {
@@ -524,7 +520,8 @@ public class AccountServiceTest {
     }
 
     @Test
-    void testTransfer_SameTextButDifferentStringObjects_DoesNotThrowBecauseOfBug() {
+    void testTransfer_SameAccountText_ThrowsException() {
+
         String from = new String("ES1212121212");
         String to = new String("ES1212121212");
 
@@ -537,10 +534,14 @@ public class AccountServiceTest {
         when(accountRepository.findByAccountNumber(same(from))).thenReturn(Optional.of(fromAccount));
         when(accountRepository.findByAccountNumber(same(to))).thenReturn(Optional.of(toAccount));
 
-        assertDoesNotThrow(() -> accountService.transfer(from, to, 50));
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () -> {
+            accountService.transfer(from, to, 50);
+        });
 
-        assertEquals(250, fromAccount.getBalance(), 0.001);
-        assertEquals(150, toAccount.getBalance(), 0.001);
+        assertEquals("Cannot transfer to same account", exception.getMessage());
+
+        assertEquals(300, fromAccount.getBalance(), 0.001);
+        assertEquals(100, toAccount.getBalance(), 0.001);
     }
 
 }
