@@ -244,4 +244,89 @@ public class AccountServiceTest {
         );
     }
 
+    @Test
+    void testWithdraw_WithValidAmount_UpdatesBalanceAndSendsEmail() {
+        String accountNumber = "ES2234567890";
+        User user = buildEmailUser();
+        Account account = buildAccount(accountNumber, Account.AccountType.CHECKING, 100, user);
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
+        when(accountRepository.save(any(Account.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Account result = accountService.withdraw(accountNumber, 40, "ATM");
+
+        assertEquals(60, result.getBalance(), 0.001);
+        verify(transactionRepository).save(any(Transaction.class));
+        verify(accountRepository).save(account);
+        verify(emailService).sendNotification(
+                eq(user),
+                eq(Notification.NotificationType.WITHDRAWAL),
+                eq("Withdrawal Confirmation"),
+                argThat(s -> s.contains("60,00") || s.contains("60.00"))
+        );
+        verifyNoInteractions(smsService);
+    }
+
+    @Test
+    void testWithdraw_WithValidAmount_UpdatesBalanceAndSendsSms() {
+        String accountNumber = "ES2234567891";
+        User user = buildSmsUser();
+        Account account = buildAccount(accountNumber, Account.AccountType.CHECKING, 200, user);
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
+        when(accountRepository.save(any(Account.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Account result = accountService.withdraw(accountNumber, 50, "ATM");
+
+        assertEquals(150, result.getBalance(), 0.001);
+        verify(transactionRepository).save(any(Transaction.class));
+        verify(accountRepository).save(account);
+        verify(smsService).sendNotification(
+                eq(user),
+                eq(Notification.NotificationType.WITHDRAWAL),
+                eq("Withdrawal"),
+                argThat(s -> s.contains("150,00") || s.contains("150.00")) // Solución aquí
+        );
+    }
+
+    @Test
+    void testWithdraw_InsufficientFunds_ThrowsException() {
+        String accountNumber = "ES2234567892";
+        Account account = buildAccount(accountNumber, Account.AccountType.CHECKING, 20, buildEmailUser());
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.withdraw(accountNumber, 40, "ATM")
+        );
+
+        assertEquals("Insufficient funds", ex.getMessage());
+        verify(transactionRepository, never()).save(any());
+        verify(accountRepository, never()).save(any());
+        verifyNoInteractions(emailService, smsService);
+    }
+
+    @Test
+    void testWithdraw_NegativeAmount_ThrowsException() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.withdraw("ES123", -1, "ATM")
+        );
+
+        assertEquals("Amount must be positive", ex.getMessage());
+        verifyNoInteractions(accountRepository, transactionRepository, emailService, smsService);
+    }
+
+    @Test
+    void testWithdraw_ExceedsLimit_ThrowsException() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.withdraw("ES123", 5001, "ATM")
+        );
+
+        assertEquals("Amount exceeds maximum withdrawal limit", ex.getMessage());
+        verifyNoInteractions(accountRepository, transactionRepository, emailService, smsService);
+    }
+
 }
