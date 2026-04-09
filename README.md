@@ -43,13 +43,13 @@
 
 ---
 
-#### **Alumno 3 - [Nombre Completo]**
+#### **Alumno 3 - Pablo Cristina Jiménez**
 
 [Descripción de las tareas y responsabilidades principales del alumno en el proyecto]
 
 | Nº    | Commits      |
 |:------------: |:------------:|
-|1| [Issue detectada](URL_commit_1)  |
+|1| [Issue detectada](https://github.com/Alexx019/ais-2026-grupo-A/commit/2e95de3e2a1b745c02cecb1b5685f2efbd4cc6c8)  |
 |2| [Prueba unitaria implementada](URL_commit_2)  |
 |3| [Refactorización implementada](URL_commit_3)  |
 |4| [Caso de TDD implementado](URL_commit_4)  |
