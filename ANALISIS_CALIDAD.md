@@ -112,7 +112,7 @@ Consideramos que se trata de un issue real, específicamente un code smell que a
 
 **Refactorización**
 
-![Refactorizacion4]([img/capturas/Captura_Issue4.png](https://github.com/Alexx019/ais-2026-grupo-A/commit/3005b543e41c4bbb9ff82e3f9ff3c88b67db6ea9))
+![Refactorizacion4](img/capturas/Refactorizacion4.png)
 
 Se borra la declaración de la variable.
 
