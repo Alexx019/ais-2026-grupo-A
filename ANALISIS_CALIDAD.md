@@ -98,19 +98,23 @@ Previamente teníamos en el código 4 veces "Deposit Confirmation" en las llamad
 
 ### Issue 4: Remove this unused "seccondAccount" local variable.
 
-*Reporte de la issue*
+**Reporte de la issue**
 En el análisis realizado con SonarQube se ha detectado un problema de calidad que indica:
 “Remove this unused "secondAccount" local variable” (Elimina esta variable local "secondAccount" no utilizada)
 A continuación se muestra la captura de pantalla de la issue reportada por SonarQube, donde se observa la declaración de la variable local Account secondAccount:
 
 ![issue4](img/capturas/Captura_Issue4.png)
 
-*Explicación de los alumnos del mal olor detectado:* 
+**Explicación de los alumnos del mal olor detectado:** 
 El error se encuentra en el método withdraw de la clase AccountService. Se declara la variable local Account seccondAccount pero esta nunca se inicializa, asigna ni usa en ningún punto del método.
 
 Consideramos que se trata de un issue real, específicamente un code smell que afecta negativamente a la mantenibilidad del software (marcada como "High" en SonarQube).
 
-*Refactorización*
+**Refactorización**
+
+![Refactorizacion4]([img/capturas/Captura_Issue4.png](https://github.com/Alexx019/ais-2026-grupo-A/commit/3005b543e41c4bbb9ff82e3f9ff3c88b67db6ea9))
+
+Se borra la declaración de la variable.
 
 ### Issue 5: Non-descriptive Naming Conventions.
 
