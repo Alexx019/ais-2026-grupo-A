@@ -52,4 +52,29 @@ class LoanApprovalAlgorithmTest {
         assertFalse(result.isApproved());
         assertEquals("Plazo no válido", result.getReason());
     }
+
+    @Test
+    void shouldRejectWhenBalanceIsInsufficient() {
+        LoanRequest request = new LoanRequest();
+        request.setAmount(20000);
+        request.setTermMonths(24);
+        request.setCustomerBalance(3000);
+        LoanEvaluationResult result = algorithm.evaluate(request);
+
+        assertFalse(result.isApproved());
+        assertEquals("Saldo insuficiente", result.getReason());
+    }
+
+    @Test
+    void shouldApproveValidBasicLoan() {
+        LoanRequest request = new LoanRequest();
+        request.setAmount(20000);
+        request.setTermMonths(24);
+        request.setCustomerBalance(5000);
+        LoanEvaluationResult result = algorithm.evaluate(request);
+
+        assertTrue(result.isApproved(), "El préstamo cumple todo y debería ser aprobado");
+        assertEquals("Aprobado", result.getReason());
+    }
+
 }
