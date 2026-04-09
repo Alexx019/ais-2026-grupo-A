@@ -133,4 +133,20 @@ class LoanApprovalAlgorithmTest {
         assertFalse(result.isApproved());
         assertEquals("Cuota demasiado alta", result.getReason());
     }
+    @Test
+    void shouldApproveWhenPaymentIsWithinIncomeLimit() {
+
+        Mockito.when(euriborServiceMock.getEuribor()).thenReturn(3.0);
+
+        LoanRequest request = new LoanRequest();
+        request.setAmount(20000);
+        request.setTermMonths(24);
+        request.setCustomerBalance(5000);
+        request.setMonthlyIncome(2200);
+
+        LoanEvaluationResult result = algorithm.evaluate(request);
+
+        assertTrue(result.isApproved());
+        assertEquals("Aprobado", result.getReason());
+    }
 }
