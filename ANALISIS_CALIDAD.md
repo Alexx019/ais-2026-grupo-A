@@ -26,6 +26,24 @@ Consideramos que se trata de un **issue real** ya que este defecto permite que u
 
 **Refactorización**
 
+### Issue 2: Logic and code should not be duplicated (DRY Principle)
+
+Reporte de la issue:
+
+Al analizar el código a mano hemos comprobado un mal olor bastante notable en ciertas partes: existen bloques de código idénticos repartidos en diferentes métodos de la clase AccountService (específicamente entre las líneas 102-116 y 151-165). 
+SonarQube y otros analizadores estáticos marcan esto como una violación del principio DRY (Don't Repeat Yourself).
+Adjunto capturas de las lineas de código:
+
+![issue1](img/capturas/CapturaIssue2A.png)
+![issue1](img/capturas/CapturaIssue2A.png)
+
+**Explicación de los alumnos del mal olor detectado:**
+Duplicación de Código (Bloque de Depósito): Los métodos deposit(String, double, String) y deposit(String, double) son prácticamente idénticos.
+
+No es un falso positivo porque la duplicación no es accidental ni necesaria por restricciones técnicas. 
+Es el resultado de un "Copy-Paste" que introduce rigidez en el diseño y aumenta el riesgo de errores de sincronización de lógica en futuras modificaciones.
+
+
 ### Issue 3: Define a constant instead of duplicating this literal "Deposit Confirmation" 4 times.
 
 **Reporte de la issue**

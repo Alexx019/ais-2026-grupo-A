@@ -29,7 +29,7 @@
 
 ---
 
-#### **Alumno 2 - [Nombre Completo]**
+#### **Alumno 2 - Alvaro Gonzalez Gonzalez**
 
 [Descripción de las tareas y responsabilidades principales del alumno en el proyecto]
 
