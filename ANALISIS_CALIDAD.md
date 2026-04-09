@@ -35,7 +35,8 @@ SonarQube y otros analizadores estáticos marcan esto como una violación del pr
 Adjunto capturas de las lineas de código:
 
 ![issue1](img/capturas/CapturaIssue2A.png)
-![issue1](img/capturas/CapturaIssue2A.png)
+
+![issue1](img/capturas/CapturaIssue2B.png)
 
 **Explicación de los alumnos del mal olor detectado:**
 Duplicación de Código (Bloque de Depósito): Los métodos deposit(String, double, String) y deposit(String, double) son prácticamente idénticos.
