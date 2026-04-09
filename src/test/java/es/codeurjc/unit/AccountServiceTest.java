@@ -329,4 +329,126 @@ public class AccountServiceTest {
         verifyNoInteractions(accountRepository, transactionRepository, emailService, smsService);
     }
 
+    @Test
+    void testTransfer_ValidAmount_UpdatesBothBalancesAndSendsEmail() {
+        String from = "ES1111111111";
+        String to = "ES2222222222";
+
+        User fromUser = buildEmailUser();
+        User toUser = buildEmailUser();
+
+        Account fromAccount = buildAccount(from, Account.AccountType.CHECKING, 300, fromUser);
+        Account toAccount = buildAccount(to, Account.AccountType.SAVINGS, 50, toUser);
+
+        when(accountRepository.findByAccountNumber(from)).thenReturn(Optional.of(fromAccount));
+        when(accountRepository.findByAccountNumber(to)).thenReturn(Optional.of(toAccount));
+
+        accountService.transfer(from, to, 100);
+
+        assertEquals(200, fromAccount.getBalance(), 0.001);
+        assertEquals(150, toAccount.getBalance(), 0.001);
+
+        verify(transactionRepository, times(2)).save(any(Transaction.class));
+        verify(accountRepository).save(fromAccount);
+        verify(accountRepository).save(toAccount);
+
+        verify(emailService).sendNotification(
+                eq(fromUser),
+                eq(Notification.NotificationType.TRANSFER),
+                eq("Transfer Sent"),
+                contains("to ES2222222222")
+        );
+        verify(emailService).sendNotification(
+                eq(toUser),
+                eq(Notification.NotificationType.TRANSFER),
+                eq("Transfer Received"),
+                contains("from ES1111111111")
+        );
+        verifyNoInteractions(smsService);
+    }
+
+    @Test
+    void testTransfer_ValidAmount_WithSmsUsers_SendsSms() {
+        String from = "ES3333333333";
+        String to = "ES4444444444";
+
+        User fromUser = buildSmsUser();
+        User toUser = buildSmsUser();
+
+        Account fromAccount = buildAccount(from, Account.AccountType.CHECKING, 500, fromUser);
+        Account toAccount = buildAccount(to, Account.AccountType.SAVINGS, 10, toUser);
+
+        when(accountRepository.findByAccountNumber(from)).thenReturn(Optional.of(fromAccount));
+        when(accountRepository.findByAccountNumber(to)).thenReturn(Optional.of(toAccount));
+
+        accountService.transfer(from, to, 100);
+
+        assertEquals(400, fromAccount.getBalance(), 0.001);
+        assertEquals(110, toAccount.getBalance(), 0.001);
+
+        verify(smsService).sendNotification(
+                eq(fromUser),
+                eq(Notification.NotificationType.TRANSFER),
+                eq("Transfer Sent"),
+                contains("to ES4444444444")
+        );
+        verify(smsService).sendNotification(
+                eq(toUser),
+                eq(Notification.NotificationType.TRANSFER),
+                eq("Transfer Received"),
+                contains("from ES3333333333")
+        );
+        verifyNoInteractions(emailService);
+    }
+
+    @Test
+    void testTransfer_SameAccount_ThrowsException() {
+        String accountNumber = "ES5555555555";
+        Account sameAccount = buildAccount(accountNumber, Account.AccountType.CHECKING, 200, buildEmailUser());
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(sameAccount));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.transfer(accountNumber, accountNumber, 50)
+        );
+
+        assertEquals("Cannot transfer to same account", ex.getMessage());
+        verify(transactionRepository, never()).save(any());
+        verify(accountRepository, never()).save(any());
+    }
+
+    @Test
+    void testTransfer_InsufficientFunds_ThrowsException() {
+        String from = "ES6666666666";
+        String to = "ES7777777777";
+
+        Account fromAccount = buildAccount(from, Account.AccountType.CHECKING, 10, buildEmailUser());
+        Account toAccount = buildAccount(to, Account.AccountType.SAVINGS, 50, buildEmailUser());
+
+        when(accountRepository.findByAccountNumber(from)).thenReturn(Optional.of(fromAccount));
+        when(accountRepository.findByAccountNumber(to)).thenReturn(Optional.of(toAccount));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.transfer(from, to, 50)
+        );
+
+        assertEquals("Insufficient funds", ex.getMessage());
+        verify(transactionRepository, never()).save(any());
+        verify(accountRepository, never()).save(any());
+        verifyNoInteractions(emailService, smsService);
+    }
+
+    @Test
+    void testTransfer_ExceedsLimit_ThrowsException() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.transfer("ES1", "ES2", 20001)
+        );
+
+        assertEquals("Amount exceeds maximum transfer limit", ex.getMessage());
+        verifyNoInteractions(accountRepository, transactionRepository, emailService, smsService);
+    }
+
 }
