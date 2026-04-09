@@ -168,6 +168,46 @@ if (request.getTermMonths() < PLAZO_MESES_MIN || request.getTermMonths() > PLAZO
 
 ![img_TDD_test4.png](img/capturas/img_TDD_test4.png)
 
+### Test 5: Debe rechazar si el saldo es insuficiente (menor al 20% de la cantidad)
+**INPUT y OUTPUT**: Cantidad: 20000, Plazo: 24, Saldo: 3000 -> "Saldo insuficiente"
+
+**Código de test**
+
+```java
+@Test
+void shouldRejectWhenBalanceIsInsufficient() {
+    LoanRequest request = new LoanRequest();
+    request.setAmount(20000);
+    request.setTermMonths(24);
+    request.setCustomerBalance(3000);
+    LoanEvaluationResult result = algorithm.evaluate(request);
+
+    assertFalse(result.isApproved());
+    assertEquals("Saldo insuficiente", result.getReason());
+}
+```
+
+**Mensaje del test añadido que NO PASA**
+
+```log
+org.opentest4j.AssertionFailedError: 
+Expected :false
+Actual   :true
+```
+
+**Código mínimo para que el test pase**
+
+Se añade una condición que calcula el 20% de la cantidad solicitada y verifica si el saldo del cliente es inferior a ese valor. Si es inferior, se rechaza el préstamo con el mensaje: "Saldo insuficiente".
+
+```java
+private static final double PORCENTAJE_SALDO_MINIMO = 0.20;
+
+if (request.getCustomerBalance() < (request.getAmount() * PORCENTAJE_SALDO_MINIMO)) {
+    return new LoanEvaluationResult(false, "Saldo insuficiente");
+}
+```
+![img_TDD_test5Correcto.png](img/capturas/test5Correcto.png)
+
 ### Test 7: Debe calcular el interés correctamente
 
 **INPUT y OUTPUT**: Euribor mockeado a 3.14 -> Interés = 2% + 3.14% = 5.14%
