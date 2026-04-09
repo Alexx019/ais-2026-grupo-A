@@ -451,4 +451,94 @@ public class AccountServiceTest {
         verifyNoInteractions(accountRepository, transactionRepository, emailService, smsService);
     }
 
+    @Test
+    void testTransfer_NegativeAmount_ThrowsException() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.transfer("ES1", "ES2", -1)
+        );
+
+        assertEquals("Amount must be positive", ex.getMessage());
+        verifyNoInteractions(accountRepository, transactionRepository, emailService, smsService);
+    }
+
+    @Test
+    void testRm_AccountWithZeroBalance_IsDeletedSuccessfully() {
+        String accountNumber = "ES1234567890";
+        User mockUser = new User();
+        Account mockAccount = new Account(accountNumber, Account.AccountType.SAVINGS, 0);
+        mockAccount.setUser(mockUser);
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(mockAccount));
+
+        accountService.rm(accountNumber);
+
+        verify(accountRepository, times(1)).delete(mockAccount);
+    }
+
+    @Test
+    void testRm_AccountWithNonZeroBalance_ThrowsException() {
+        String accountNumber = "ES8888888888";
+        Account account = buildAccount(accountNumber, Account.AccountType.SAVINGS, 10, buildEmailUser());
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.rm(accountNumber)
+        );
+
+        assertEquals("Cannot delete account with non-zero balance", ex.getMessage());
+        verify(accountRepository, never()).delete(any());
+    }
+
+    @Test
+    void testGetBalance_ReturnsCorrectAmount() {
+        String accountNumber = "ES9999999999";
+        Account account = buildAccount(accountNumber, Account.AccountType.SAVINGS, 123.45, buildEmailUser());
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
+
+        double result = accountService.getBalance(accountNumber);
+
+        assertEquals(123.45, result, 0.001);
+    }
+
+    @Test
+    void testGetTransactions_ReturnsList() {
+        String accountNumber = "ES1010101010";
+        Account account = buildAccount(accountNumber, Account.AccountType.SAVINGS, 0, buildEmailUser());
+
+        Transaction tx1 = new Transaction(account, Transaction.TransactionType.DEPOSIT, 50, "Salary");
+        Transaction tx2 = new Transaction(account, Transaction.TransactionType.WITHDRAWAL, 20, "ATM");
+        List<Transaction> transactions = List.of(tx1, tx2);
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
+        when(transactionRepository.findByAccountOrderByTimestampDesc(account)).thenReturn(transactions);
+
+        List<Transaction> result = accountService.getTransactions(accountNumber);
+
+        assertEquals(transactions, result);
+    }
+
+    @Test
+    void testTransfer_SameTextButDifferentStringObjects_DoesNotThrowBecauseOfBug() {
+        String from = new String("ES1212121212");
+        String to = new String("ES1212121212");
+
+        User user1 = buildEmailUser();
+        User user2 = buildEmailUser();
+
+        Account fromAccount = buildAccount(from, Account.AccountType.CHECKING, 300, user1);
+        Account toAccount = buildAccount(to, Account.AccountType.SAVINGS, 100, user2);
+
+        when(accountRepository.findByAccountNumber(same(from))).thenReturn(Optional.of(fromAccount));
+        when(accountRepository.findByAccountNumber(same(to))).thenReturn(Optional.of(toAccount));
+
+        assertDoesNotThrow(() -> accountService.transfer(from, to, 50));
+
+        assertEquals(250, fromAccount.getBalance(), 0.001);
+        assertEquals(150, toAccount.getBalance(), 0.001);
+    }
+
 }
