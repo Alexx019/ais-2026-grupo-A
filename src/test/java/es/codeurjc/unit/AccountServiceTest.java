@@ -160,4 +160,88 @@ public class AccountServiceTest {
         );
         verifyNoInteractions(smsService);
     }
+
+    @Test
+    void testDeposit_WithValidAmount_UpdatesBalanceAndSendsSms() {
+        String accountNumber = "ES1234567891";
+        User user = buildSmsUser();
+        Account account = buildAccount(accountNumber, Account.AccountType.SAVINGS, 100, user);
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
+        when(accountRepository.save(any(Account.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Account result = accountService.deposit(accountNumber, 25, "Cash in");
+
+        assertEquals(125, result.getBalance(), 0.001);
+        verify(transactionRepository).save(any(Transaction.class));
+        verify(accountRepository).save(account);
+
+        verify(smsService).sendNotification(
+                eq(user),
+                eq(Notification.NotificationType.DEPOSIT),
+                eq("Deposit Confirmation"),
+                matches(".Balance: 125[.,]00 EUR.")
+        );
+        verifyNoInteractions(emailService);
+    }
+
+    @Test
+    void testDeposit_WithNegativeAmount_ThrowsException() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.deposit("ES123", -1, "Invalid")
+        );
+
+        assertEquals("Amount must be positive", ex.getMessage());
+        verifyNoInteractions(accountRepository, transactionRepository, emailService, smsService);
+    }
+
+    @Test
+    void testDeposit_WithZeroAmount_ThrowsException() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.deposit("ES123", 0, "Invalid")
+        );
+
+        assertEquals("Amount must be positive", ex.getMessage());
+        verifyNoInteractions(accountRepository, transactionRepository, emailService, smsService);
+    }
+
+    @Test
+    void testDeposit_ExceedsLimit_ThrowsException() {
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.deposit("ES123", 10001, "Too much")
+        );
+
+        assertEquals("Amount exceeds maximum deposit limit", ex.getMessage());
+        verifyNoInteractions(accountRepository, transactionRepository, emailService, smsService);
+    }
+
+    @Test
+    void testQuickDeposit_WorksCorrectly() {
+        String accountNumber = "ES1234567892";
+        User user = buildEmailUser();
+        Account account = buildAccount(accountNumber, Account.AccountType.SAVINGS, 100, user);
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
+        when(accountRepository.save(any(Account.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Account result = accountService.deposit(accountNumber, 40);
+
+        assertEquals(140, result.getBalance(), 0.001);
+
+        ArgumentCaptor<Transaction> transactionCaptor = ArgumentCaptor.forClass(Transaction.class);
+        verify(transactionRepository).save(transactionCaptor.capture());
+        assertEquals(Transaction.TransactionType.DEPOSIT, transactionCaptor.getValue().getType());
+        assertEquals("Quick deposit", transactionCaptor.getValue().getDescription());
+
+        verify(emailService).sendNotification(
+                eq(user),
+                eq(Notification.NotificationType.DEPOSIT),
+                eq("Deposit Confirmation"),
+                matches(".New balance: 140.00 EUR.".replace(".", "[.,]"))
+        );
+    }
+
 }
