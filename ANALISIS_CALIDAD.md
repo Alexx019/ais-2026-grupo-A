@@ -25,6 +25,9 @@ El operador `==` en Java compara si dos variables apuntan al mismo espacio en me
 Consideramos que se trata de un **issue real** ya que este defecto permite que un usuario realice transferencias hacia su propia cuenta, vulnerando las reglas del sistema. Su corrección es crítica para mantener la integridad de la lógica de negocio y evitar transacciones inválidas en la aplicación.
 
 **Refactorización**
+![Refactorización_issue1](img/capturas/refactorizacion_Issue5.png)
+
+Al utilizar equals(), el sistema evaluará correctamente si las cadenas de caracteres (números de cuenta) coinciden posición a posición, lo que garantizará que la condición se cumpla siempre que las cuentas sean idénticas.
 
 ### Issue 2: Logic and code should not be duplicated (DRY Principle)
 
