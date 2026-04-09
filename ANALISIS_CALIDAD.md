@@ -20,11 +20,13 @@ se observa la comparación incorrecta de dos Strings diferentes en la clase Acco
 ![issue1](img/capturas/Captura_Issue5.png)
 
 **Explicación de los alumnos del mal olor detectado:** 
+
 El operador `==` en Java compara si dos variables apuntan al mismo espacio en memoria, independientemente de su contenido. Esto significa que el código no valida realmente si los números de cuenta (String) provienen de objetos distintos.
 
 Consideramos que se trata de un **issue real** ya que este defecto permite que un usuario realice transferencias hacia su propia cuenta, vulnerando las reglas del sistema. Su corrección es crítica para mantener la integridad de la lógica de negocio y evitar transacciones inválidas en la aplicación.
 
 **Refactorización**
+
 ![Refactorización_issue1](img/capturas/refactorizacion_Issue5.png)
 
 Al utilizar equals(), el sistema evaluará correctamente si las cadenas de caracteres (números de cuenta) coinciden posición a posición, lo que garantizará que la condición se cumpla siempre que las cuentas sean idénticas.
@@ -42,6 +44,7 @@ Adjunto capturas de las lineas de código:
 ![issue1](img/capturas/CapturaIssue2B.png)
 
 **Explicación de los alumnos del mal olor detectado:**
+
 Duplicación de Código (Bloque de Depósito): Los métodos deposit(String, double, String) y deposit(String, double) son prácticamente idénticos.
 
 No es un falso positivo porque la duplicación no es accidental ni necesaria por restricciones técnicas. 
@@ -80,6 +83,7 @@ El código se reduce drásticamente, ya que el método deposit con 2 argumentos 
 ### Issue 3: Define a constant instead of duplicating this literal "Deposit Confirmation" 4 times.
 
 **Reporte de la issue:**
+
 En el análisis realizado con SonarQube se ha detectado un problema de calidad que indica:
 “Define a constant instead of duplicating this literal "Deposit Confirmation" 4 times” (Define una constante en lugar de duplicar este literal "Deposit Confirmation" 4 veces).
 A continuación se muestra la captura de pantalla de la issue reportada por SonarQube, donde se observa la repetición de la misma cadena de texto en diferentes llamadas a métodos (como emailService y smsService) dentro de la clase AccountService:
@@ -92,6 +96,7 @@ El uso repetido de cadenas de texto literales a lo largo del código viola el pr
 Consideramos que se trata de un issue real, específicamente un code smell que afecta negativamente a la mantenibilidad del software (marcada como "High" en SonarQube).
 
 **Refactorización**
+
 Previamente teníamos en el código 4 veces "Deposit Confirmation" en las llamadas a los servicios de notificación en los métodos deposit(). Para cumplir el principio DRY declaramos la constante DEPOSIT_CONFIRMATION_SUBJECT y sustituimos los 4 "Deposit Confirmation" por la constante creada.
 
 ![refactor3](img/capturas/Captura_Refactor3.png)
@@ -99,6 +104,7 @@ Previamente teníamos en el código 4 veces "Deposit Confirmation" en las llamad
 ### Issue 4: Remove this unused "seccondAccount" local variable.
 
 **Reporte de la issue**
+
 En el análisis realizado con SonarQube se ha detectado un problema de calidad que indica:
 “Remove this unused "secondAccount" local variable” (Elimina esta variable local "secondAccount" no utilizada)
 A continuación se muestra la captura de pantalla de la issue reportada por SonarQube, donde se observa la declaración de la variable local Account secondAccount:
@@ -106,6 +112,7 @@ A continuación se muestra la captura de pantalla de la issue reportada por Sona
 ![issue4](img/capturas/Captura_Issue4.png)
 
 **Explicación de los alumnos del mal olor detectado:** 
+
 El error se encuentra en el método withdraw de la clase AccountService. Se declara la variable local Account seccondAccount pero esta nunca se inicializa, asigna ni usa en ningún punto del método.
 
 Consideramos que se trata de un issue real, específicamente un code smell que afecta negativamente a la mantenibilidad del software (marcada como "High" en SonarQube).
@@ -125,9 +132,19 @@ A continuación se muestra la captura de pantalla de la issue reportada por Sona
 ![issue5](img/capturas/img_issue5.png)
 
 **Explicación de los alumnos del mal olor detectado:**
+
 Se han identificado dos deficiencias principales relacionadas con la semántica del código:
 - Variables de una sola letra: En el método transfer, se utilizan nombres como m y o. Esto oscurece la lógica de negocio, ya que el desarrollador debe deducir por el contexto cuál es la cuenta que emite los fondos y cuál la que los recibe.
 - Abreviaturas no estándar: El método encargado de la eliminación de cuentas utiliza el nombre rm. Aunque es una abreviatura común en entornos de terminal (Unix), en el desarrollo de servicios con Java y Spring se considera una mala práctica, prefiriéndose nombres que utilicen verbos completos y descriptivos.
 
 Consideramos que se trata de un issue real de calidad. La falta de claridad en los nombres aumenta la "carga cognitiva" necesaria para entender el flujo de una transferencia bancaria, lo que puede derivar en errores de mantenimiento o en una curva de aprendizaje más lenta para nuevos miembros del equipo.
+
 **Refactorización**
+
+Hemos cambiado el nombre de las variables que se llamaban m y o previamente y de la función llamada rm previamente.
+```java
+Account sourceAccount = getAccount(fromAccountNumber);
+Account destinationAccount = getAccount(toAccountNumber);
+
+public void deleteAccount(String accountNumber);
+```
