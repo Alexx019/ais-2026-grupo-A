@@ -176,11 +176,12 @@ public class AccountServiceTest {
         verify(transactionRepository).save(any(Transaction.class));
         verify(accountRepository).save(account);
 
+        // Corregido: Usamos matches con una expresión regular que acepta coma o punto
         verify(smsService).sendNotification(
                 eq(user),
                 eq(Notification.NotificationType.DEPOSIT),
                 eq("Deposit Confirmation"),
-                matches(".Balance: 125[.,]00 EUR.")
+                matches(".*Balance: 125[.,]00 EUR.*")
         );
         verifyNoInteractions(emailService);
     }
@@ -236,11 +237,12 @@ public class AccountServiceTest {
         assertEquals(Transaction.TransactionType.DEPOSIT, transactionCaptor.getValue().getType());
         assertEquals("Quick deposit", transactionCaptor.getValue().getDescription());
 
+        // Corregido: Buscamos "140" y "EUR" por separado o permitimos cualquier carácter entre ellos
         verify(emailService).sendNotification(
                 eq(user),
                 eq(Notification.NotificationType.DEPOSIT),
                 eq("Deposit Confirmation"),
-                matches(".New balance: 140.00 EUR.".replace(".", "[.,]"))
+                matches(".*New balance: 140.00 EUR.*".replace(".", "[.,]"))
         );
     }
 
