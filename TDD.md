@@ -1,51 +1,48 @@
 # Tarea 4: Implementación de una funcionalidad con TDD 
 
-Se proporciona un ejemplo de cómo reportar la implementación de una funcionalidad utilizando TDD. 
 
-### Ejemplo 1
+### Test 1: Debe rechazar si la cantidad es menor a 1000
 
-**INPUT y OUTPUT**: 1 -> "I"
+**INPUT y OUTPUT**: 500 -> "Cantidad fuera de rango"
 
-**EJ1. Código de test**
+**Código de test**
 ```java
 @Test
-public void testI() {
-    RomanConverter converter = new RomanConverter();
-    assertEquals("I", converter.convert(1));
+void shouldRejectWhenAmountIsTooLow() {
+    LoanRequest request = new LoanRequest();
+    request.setAmount(500);
+    LoanEvaluationResult result = algorithm.evaluate(request);
+
+    assertFalse(result.isApproved());
+    assertEquals("Cantidad fuera de rango", result.getReason());
 }
 ```
 
-**EJ1. Mensaje del test añadido que NO PASA**
+**Mensaje del test añadido que NO PASA**
 
 ```log
-org.opentest4j.AssertionFailedError: expected: [I] but was: []
+org.opentest4j.AssertionFailedError: 
+Expected :false
+Actual   :true
 ```
 
-**EJ1. Código mínimo para que el test pase**
+**Código mínimo para que el test pase**
 
-Describe brevemente el código mínimo implementado
+Se añade una condición que verifica la cantidad del préstamo y la compara con el límite inferior (en este caso 1000). Si es inferior se rechaza el préstamo con el mensaje: "Cantidad fuera de rango"
 
 ```java
-public String convert(int number){
-    return "I";
+private static final int LIMITE_INFERIOR = 1000;
+
+public LoanEvaluationResult evaluate(LoanRequest request) {
+
+    if (request.getAmount() < LIMITE_INFERIOR){
+        return new LoanEvaluationResult(false, "Cantidad fuera de rango");
+    }
+
+    return new LoanEvaluationResult(true, "Aprobado");
 }
 ```
 
-**EJ1. Captura de que TODOS los test PASAN**
+**Captura de que TODOS los test PASAN**
 
-![Pasa](img/capturas/Ejemplo_1_PASA.png "Pasa")
-
-**EJ1. Refactorización**
-> [BORRAR]  Solo si se considera necesario
-
-Justificar vuestra refactorización aquí.
-
-```java
-public String convert(int number){
-    return "I"; // Imaginemos que hemos refactorizado aquí
-}
-```
-**EJ1. Captura de que TODOS los tests PASAN tras la refactorización**
-> [BORRAR]  Solo si se ha realizado una refactorización
-
-![Pasa](img/capturas/Ejemplo_1_PASA.png "Pasa")
+![img_TDD_test1.png](img/capturas/img_TDD_test1.png)
