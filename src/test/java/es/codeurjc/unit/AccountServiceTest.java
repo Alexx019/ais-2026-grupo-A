@@ -469,7 +469,7 @@ public class AccountServiceTest {
 
         when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(mockAccount));
 
-        accountService.rm(accountNumber);
+        accountService.deleteAccount(accountNumber);
 
         verify(accountRepository, times(1)).delete(mockAccount);
     }
@@ -483,7 +483,7 @@ public class AccountServiceTest {
 
         IllegalArgumentException ex = assertThrows(
                 IllegalArgumentException.class,
-                () -> accountService.rm(accountNumber)
+                () -> accountService.deleteAccount(accountNumber)
         );
 
         assertEquals("Cannot delete account with non-zero balance", ex.getMessage());

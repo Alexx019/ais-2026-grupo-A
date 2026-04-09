@@ -47,6 +47,32 @@ Duplicación de Código (Bloque de Depósito): Los métodos deposit(String, doub
 No es un falso positivo porque la duplicación no es accidental ni necesaria por restricciones técnicas. 
 Es el resultado de un "Copy-Paste" que introduce rigidez en el diseño y aumenta el riesgo de errores de sincronización de lógica en futuras modificaciones.
 
+**Reporte de la issue**
+Creamos una nueva función privada para que los métodos deposit la llamen y no necesiten hacer bloques de código repetidos
+private void sendDepositNotification(Account account, double amount) {
+User user = account.getUser();
+User.NotificationType notifType = user.getNotificationType();
+    String subject = "Deposit Confirmation";
+    double balance = account.getBalance();
+    if (notifType == User.NotificationType.EMAIL) {
+        emailService.sendNotification(
+                user,
+                Notification.NotificationType.DEPOSIT,
+                subject,
+                String.format("Deposit of %.2f EUR. New balance: %.2f EUR", amount, balance));
+    } else if (notifType == User.NotificationType.SMS) {
+        smsService.sendNotification(
+                user,
+                Notification.NotificationType.DEPOSIT,
+                subject,
+                String.format("Deposit: %.2f EUR. Balance: %.2f EUR", amount, balance));
+    }
+}
+
+Ahora, tanto en el depósito con descripción como en el rápido, solo tienes que llamar al método anterior.
+El código se reduce drásticamente, ya que el método deposit con 2 argumentos simplemente hace una llamada a la función deposit con 3 parámetros.
+
+
 
 ### Issue 3: Define a constant instead of duplicating this literal "Deposit Confirmation" 4 times.
 

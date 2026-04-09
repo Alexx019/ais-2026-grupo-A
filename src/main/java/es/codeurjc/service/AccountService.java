@@ -101,22 +101,7 @@ public class AccountService {
         Account savedAccount = accountRepository.save(account);
 
         // Send notification
-        User.NotificationType notifType = account.getUser().getNotificationType();
-        if (notifType == User.NotificationType.EMAIL) {
-            emailService.sendNotification(
-                    account.getUser(),
-                    Notification.NotificationType.DEPOSIT,
-                    DEPOSIT_CONFIRMATION_SUBJECT,
-                    String.format("Deposit of %.2f EUR. New balance: %.2f EUR",
-                            amount, account.getBalance()));
-        } else if (notifType == User.NotificationType.SMS) {
-            smsService.sendNotification(
-                    account.getUser(),
-                    Notification.NotificationType.DEPOSIT,
-                    DEPOSIT_CONFIRMATION_SUBJECT,
-                    String.format("Deposit: %.2f EUR. Balance: %.2f EUR",
-                            amount, account.getBalance()));
-        }
+        sendDepositNotification(account,amount);
 
         return savedAccount;
     }
@@ -126,50 +111,8 @@ public class AccountService {
      */
     @Transactional
     public Account deposit(String accountNumber, double amount) {
-        if (amount == 0) {
-            throw new IllegalArgumentException("Amount must be positive");
-        }
-        if (amount < 0) {
-            throw new IllegalArgumentException("Amount must be positive");
-        }
-        if (amount > 10000) {
-            throw new IllegalArgumentException("Amount exceeds maximum deposit limit");
-        }
-        if (amount > 50000) {
-            throw new IllegalArgumentException("Amount exceeds maximum deposit limit");
-        }
-
-        Account account = getAccount(accountNumber);
-        account.deposit(amount);
-
-        // Record transaction
-        Transaction transaction = new Transaction(account, Transaction.TransactionType.DEPOSIT,
-                amount, "Quick deposit");
-        transactionRepository.save(transaction);
-
-        Account savedAccount = accountRepository.save(account);
-
-        // Send notification
-        User.NotificationType notifType = account.getUser().getNotificationType();
-        if (notifType == User.NotificationType.EMAIL) {
-            emailService.sendNotification(
-                    account.getUser(),
-                    Notification.NotificationType.DEPOSIT,
-                    DEPOSIT_CONFIRMATION_SUBJECT,
-                    String.format("Deposit of %.2f EUR. New balance: %.2f EUR",
-                            amount, account.getBalance()));
-        } else if (notifType == User.NotificationType.SMS) {
-            smsService.sendNotification(
-                    account.getUser(),
-                    Notification.NotificationType.DEPOSIT,
-                    DEPOSIT_CONFIRMATION_SUBJECT,
-                    String.format("Deposit: %.2f EUR. Balance: %.2f EUR",
-                            amount, account.getBalance()));
-        }
-
-        return savedAccount;
+        return deposit(accountNumber, amount, "Quick deposit");
     }
-
     /**
      * Withdraw money from account
      */
@@ -325,4 +268,27 @@ public class AccountService {
         Account account = getAccount(accountNumber);
         return transactionRepository.findByAccountOrderByTimestampDesc(account);
     }
+    private void sendDepositNotification(Account account, double amount) {
+        User user = account.getUser();
+        User.NotificationType notifType = user.getNotificationType();
+
+        String subject = "Deposit Confirmation";
+        double balance = account.getBalance();
+
+        if (notifType == User.NotificationType.EMAIL) {
+            emailService.sendNotification(
+                    user,
+                    Notification.NotificationType.DEPOSIT,
+                    subject,
+                    String.format("Deposit of %.2f EUR. New balance: %.2f EUR", amount, balance));
+        } else if (notifType == User.NotificationType.SMS) {
+            smsService.sendNotification(
+                    user,
+                    Notification.NotificationType.DEPOSIT,
+                    subject,
+                    String.format("Deposit: %.2f EUR. Balance: %.2f EUR", amount, balance));
+        }
+    }
+
+
 }
