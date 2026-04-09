@@ -20,6 +20,8 @@ import java.util.List;
 @Service
 public class AccountService {
 
+    private static final String DEPOSIT_CONFIRMATION_SUBJECT = "Deposit Confirmation";
+
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
     private final EmailNotificationService emailService;
@@ -27,10 +29,10 @@ public class AccountService {
     private final RandomService randomService;
 
     public AccountService(AccountRepository accountRepository,
-            TransactionRepository transactionRepository,
-            EmailNotificationService emailService,
-            SmsNotificationService smsService,
-            RandomService randomService) {
+                          TransactionRepository transactionRepository,
+                          EmailNotificationService emailService,
+                          SmsNotificationService smsService,
+                          RandomService randomService) {
         this.accountRepository = accountRepository;
         this.transactionRepository = transactionRepository;
         this.emailService = emailService;
@@ -104,14 +106,14 @@ public class AccountService {
             emailService.sendNotification(
                     account.getUser(),
                     Notification.NotificationType.DEPOSIT,
-                    "Deposit Confirmation",
+                    DEPOSIT_CONFIRMATION_SUBJECT,
                     String.format("Deposit of %.2f EUR. New balance: %.2f EUR",
                             amount, account.getBalance()));
         } else if (notifType == User.NotificationType.SMS) {
             smsService.sendNotification(
                     account.getUser(),
                     Notification.NotificationType.DEPOSIT,
-                    "Deposit Confirmation",
+                    DEPOSIT_CONFIRMATION_SUBJECT,
                     String.format("Deposit: %.2f EUR. Balance: %.2f EUR",
                             amount, account.getBalance()));
         }
@@ -153,14 +155,14 @@ public class AccountService {
             emailService.sendNotification(
                     account.getUser(),
                     Notification.NotificationType.DEPOSIT,
-                    "Deposit Confirmation",
+                    DEPOSIT_CONFIRMATION_SUBJECT,
                     String.format("Deposit of %.2f EUR. New balance: %.2f EUR",
                             amount, account.getBalance()));
         } else if (notifType == User.NotificationType.SMS) {
             smsService.sendNotification(
                     account.getUser(),
                     Notification.NotificationType.DEPOSIT,
-                    "Deposit Confirmation",
+                    DEPOSIT_CONFIRMATION_SUBJECT,
                     String.format("Deposit: %.2f EUR. Balance: %.2f EUR",
                             amount, account.getBalance()));
         }
@@ -272,8 +274,8 @@ public class AccountService {
                     String.format("Transfer of %.2f EUR to %s. New balance: %.2f EUR", amount, toAccountNumber, m.getBalance()));
         } else if (notifType == User.NotificationType.SMS) {
             smsService.sendNotification(
-                    m.getUser(), 
-                    Notification.NotificationType.TRANSFER, 
+                    m.getUser(),
+                    Notification.NotificationType.TRANSFER,
                     "Transfer Sent",
                     String.format("Transfer of %.2f EUR to %s. New balance: %.2f EUR", amount, toAccountNumber, m.getBalance()));
         }
@@ -285,13 +287,13 @@ public class AccountService {
                     Notification.NotificationType.TRANSFER,
                     "Transfer Received",
                     String.format("Transfer of %.2f EUR from %s. New balance: %.2f EUR",
-                        amount, fromAccountNumber, o.getBalance()));
+                            amount, fromAccountNumber, o.getBalance()));
         } else if (notifTypeTo == User.NotificationType.SMS) {
             smsService.sendNotification(
-                o.getUser(), 
-                Notification.NotificationType.TRANSFER, 
-                "Transfer Received",
-                String.format("Transfer of %.2f EUR from %s. New balance: %.2f EUR", amount, fromAccountNumber, o.getBalance()));
+                    o.getUser(),
+                    Notification.NotificationType.TRANSFER,
+                    "Transfer Received",
+                    String.format("Transfer of %.2f EUR from %s. New balance: %.2f EUR", amount, fromAccountNumber, o.getBalance()));
         }
     }
 
