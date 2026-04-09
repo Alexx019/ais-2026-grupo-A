@@ -22,4 +22,12 @@ class LoanApprovalAlgorithmTest {
     }
 
     @Test
+    void shouldRejectWhenAmountIsTooHigh() {
+        LoanRequest request = new LoanRequest();
+        request.setAmount(50001);
+        LoanEvaluationResult result = algorithm.evaluate(request);
+
+        assertFalse(result.isApproved());
+        assertEquals("Cantidad fuera de rango", result.getReason());
+    }
 }

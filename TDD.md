@@ -46,3 +46,49 @@ public LoanEvaluationResult evaluate(LoanRequest request) {
 **Captura de que TODOS los test PASAN**
 
 ![img_TDD_test1.png](img/capturas/img_TDD_test1.png)
+
+### Test 2: Debe rechazar si la cantidad es mayor a 50000
+
+**INPUT y OUTPUT**: 50001 -> "Cantidad fuera de rango"
+
+**Código de test**
+```java
+@Test
+void shouldRejectWhenAmountIsTooHigh() {
+    LoanRequest request = new LoanRequest();
+    request.setAmount(50001);
+    LoanEvaluationResult result = algorithm.evaluate(request);
+
+    assertFalse(result.isApproved());
+    assertEquals("Cantidad fuera de rango", result.getReason());
+}
+```
+
+**Mensaje del test añadido que NO PASA**
+
+```log
+org.opentest4j.AssertionFailedError: 
+Expected :false
+Actual   :true
+```
+
+**Código mínimo para que el test pase**
+
+Se añade una condición que verifica la cantidad del préstamo y la compara con el límite superior (en este caso 50000). Si es superior se rechaza el préstamo con el mensaje: "Cantidad fuera de rango"
+
+```java
+private static final int LIMITE_SUPEIOR = 50000;
+
+public LoanEvaluationResult evaluate(LoanRequest request) {
+
+    if (request.getAmount() < LIMITE_INFERIOR || request.getAmount() > LIMITE_SUPEIOR){
+        return new LoanEvaluationResult(false, "Cantidad fuera de rango");
+    }
+
+    return new LoanEvaluationResult(true, "Aprobado");
+}
+```
+
+**Captura de que TODOS los test PASAN**
+
+![img_TDD_test2.png](img/capturas/img_TDD_test2.png)
