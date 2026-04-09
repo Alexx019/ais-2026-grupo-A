@@ -23,7 +23,7 @@
 |:------------: |:------------:|
 |1| [Issue detectada](https://github.com/Alexx019/ais-2026-grupo-A/commit/696644546e78c998a2424253897dda432fbe73e1)  |
 |2| [Prueba unitaria implementada](https://github.com/Alexx019/ais-2026-grupo-A/commit/64f726fe108d553512c1ec28c33df9210ed4cf9d)  |
-|3| [Refactorización implementada](URL_commit_3)  |
+|3| [Refactorización implementada](https://github.com/Alexx019/ais-2026-grupo-A/commit/81aa48072df3234f5e4e7cd7d8475c42568f9158)  |
 |4| [Caso de TDD implementado](URL_commit_4)  |
 |5| [Prueba de sistema implementada](URL_commit_5)  |
 
