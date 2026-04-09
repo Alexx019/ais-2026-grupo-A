@@ -1,8 +1,19 @@
 package es.codeurjc.service.loan;
 
 import es.codeurjc.model.LoanEvaluationResult;
+import es.codeurjc.service.EuriborService;
 
 public class LoanApprovalAlgorithm {
+
+    private final EuriborService euriborService;
+
+    public LoanApprovalAlgorithm() {
+        this.euriborService = new EuriborService();
+    }
+
+    public LoanApprovalAlgorithm(EuriborService euriborService) {
+        this.euriborService = euriborService;
+    }
 
     private static final int LIMITE_INFERIOR = 1000;
     private static final int LIMITE_SUPEIOR = 50000;
@@ -26,6 +37,9 @@ public class LoanApprovalAlgorithm {
             return new LoanEvaluationResult(false, "Saldo insuficiente");
         }
 
-        return new LoanEvaluationResult(true, "Aprobado");
+        double interestRate = 2.0 + euriborService.getEuribor();
+        double totalAmount = request.getAmount() + (request.getAmount() * (interestRate / 100));
+        double monthlyPayment = totalAmount / request.getTermMonths();
+        return new LoanEvaluationResult(true, "Aprobado", request.getAmount(), interestRate, monthlyPayment);
     }
 }

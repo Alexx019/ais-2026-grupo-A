@@ -1,11 +1,11 @@
-# Tarea 4: Implementación de una funcionalidad con TDD 
-
+# Tarea 4: Implementación de una funcionalidad con TDD
 
 ### Test 1: Debe rechazar si la cantidad es menor a 1000
 
 **INPUT y OUTPUT**: 500 -> "Cantidad fuera de rango"
 
 **Código de test**
+
 ```java
 @Test
 void shouldRejectWhenAmountIsTooLow() {
@@ -21,7 +21,7 @@ void shouldRejectWhenAmountIsTooLow() {
 **Mensaje del test añadido que NO PASA**
 
 ```log
-org.opentest4j.AssertionFailedError: 
+org.opentest4j.AssertionFailedError:
 Expected :false
 Actual   :true
 ```
@@ -47,6 +47,7 @@ if (request.getAmount() < LIMITE_INFERIOR){
 **INPUT y OUTPUT**: 50001 -> "Cantidad fuera de rango"
 
 **Código de test**
+
 ```java
 @Test
 void shouldRejectWhenAmountIsTooHigh() {
@@ -62,7 +63,7 @@ void shouldRejectWhenAmountIsTooHigh() {
 **Mensaje del test añadido que NO PASA**
 
 ```log
-org.opentest4j.AssertionFailedError: 
+org.opentest4j.AssertionFailedError:
 Expected :false
 Actual   :true
 ```
@@ -88,6 +89,7 @@ if (request.getAmount() < LIMITE_INFERIOR || request.getAmount() > LIMITE_SUPEIO
 **INPUT y OUTPUT**: 5 meses -> "Plazo no válido"
 
 **Código de test**
+
 ```java
 @Test
 void shouldRejectWhenTermMonthsAreTooLow() {
@@ -104,7 +106,7 @@ void shouldRejectWhenTermMonthsAreTooLow() {
 **Mensaje del test añadido que NO PASA**
 
 ```log
-org.opentest4j.AssertionFailedError: 
+org.opentest4j.AssertionFailedError:
 Expected :false
 Actual   :true
 ```
@@ -125,12 +127,12 @@ if (request.getTermMonths() < PLAZO_MESES_MIN){
 
 ![img_TDD_test3.png](img/capturas/img_TDD_test3.png)
 
-
 ### Test 4: Debe rechazar si el plazo es superior a 120 meses
 
 **INPUT y OUTPUT**: 200 meses -> "Plazo no válido"
 
 **Código de test**
+
 ```java
 @Test
 void shouldRejectWhenTermMonthsAreTooHigh() {
@@ -147,7 +149,7 @@ void shouldRejectWhenTermMonthsAreTooHigh() {
 **Mensaje del test añadido que NO PASA**
 
 ```log
-org.opentest4j.AssertionFailedError: 
+org.opentest4j.AssertionFailedError:
 Expected :false
 Actual   :true
 ```
@@ -164,6 +166,91 @@ if (request.getTermMonths() < PLAZO_MESES_MIN || request.getTermMonths() > PLAZO
 }
 ```
 
+![img_TDD_test4.png](img/capturas/img_TDD_test4.png)
+
+### Test 7: Debe calcular el interés correctamente
+
+**INPUT y OUTPUT**: Euribor mockeado a 3.14 -> Interés = 2% + 3.14% = 5.14%
+
+**Código de test**
+
+```java
+@Test
+void shouldCalculateInterestRateCorrectly() {
+    Mockito.when(euriborServiceMock.getEuribor()).thenReturn(3.14);
+    LoanRequest request = new LoanRequest();
+    request.setAmount(20000);
+    request.setTermMonths(24);
+    request.setCustomerBalance(5000);
+    LoanEvaluationResult result = algorithm.evaluate(request);
+
+    assertTrue(result.isApproved());
+    assertEquals(5.14, result.getInterestRate(), 0.001);
+}
+```
+
+**Mensaje del test añadido que NO PASA**
+
+```log
+org.opentest4j.AssertionFailedError:
+Expected :5.14
+Actual   :0.0
+```
+
+**Código mínimo para que el test pase**
+
+Se inyecta un `EuriborService` a través del constructor y se calcula añadiendo una base del 2% al Euribor devuelto por el servicio externo.
+
+```java
+private static final double TASA_BASE = 2.0;
+
+double interestRate = TASA_BASE + euriborService.getEuribor();
+return new LoanEvaluationResult(true, "Aprobado", request.getAmount(), interestRate, 0.0);
+```
+
 **Captura de que TODOS los test PASAN**
 
-![img_TDD_test4.png](img/capturas/img_TDD_test4.png)
+![img_TDD_test7.png](img/capturas/img_TDD_test7.png)
+
+### Test 8: Debe calcular la cuota mensual correctamente
+
+**INPUT y OUTPUT**: Préstamo de 20000€ a 24 meses, Euribor al 3.0% (Interés total 5.0%) -> Cuota mensual = 875.0€
+
+**Código de test**
+
+```java
+@Test
+void shouldCalculateMonthlyPaymentCorrectly() {
+    Mockito.when(euriborServiceMock.getEuribor()).thenReturn(3.0);
+    LoanRequest request = new LoanRequest();
+    request.setAmount(20000);
+    request.setTermMonths(24);
+    request.setCustomerBalance(5000);
+    LoanEvaluationResult result = algorithm.evaluate(request);
+
+    assertTrue(result.isApproved());
+    assertEquals(875.0, result.getMonthlyPayment(), 0.001);
+}
+```
+
+**Mensaje del test añadido que NO PASA**
+
+```log
+org.opentest4j.AssertionFailedError:
+Expected :875.0
+Actual   :0.0
+```
+
+**Código mínimo para que el test pase**
+
+Se calcula la cuota mensual dividiendo el total a pagar (principal más intereses) entre el número de meses.
+
+```java
+double totalAmount = request.getAmount() + (request.getAmount() * (interestRate / 100));
+double monthlyPayment = totalAmount / request.getTermMonths();
+return new LoanEvaluationResult(true, "Aprobado", request.getAmount(), interestRate, monthlyPayment);
+```
+
+**Captura de que TODOS los test PASAN**
+
+![img_TDD_test8.png](img/capturas/img_TDD_test8.png)
