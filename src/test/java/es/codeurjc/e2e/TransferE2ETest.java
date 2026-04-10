@@ -260,4 +260,16 @@ public class TransferE2ETest {
         login(userB.getUsername());
         assertEquals(1000.0, readBalanceFromDashboard(accountB1.getAccountNumber()), 0.01);
     }
+    @Test
+    void cannotTransferToInvalidAccount() {
+        login(userA.getUsername());
+
+        fillAndSubmitTransfer(accountA1.getAccountNumber(), "ES9999999999", "100");
+
+        String msg = waitForErrorMessage();
+        assertTrue(msg.contains("Account not found"),
+                "Unexpected error message: " + msg);
+
+        assertEquals(5000.0, readBalanceFromDashboard(accountA1.getAccountNumber()), 0.01);
+    }
 }
