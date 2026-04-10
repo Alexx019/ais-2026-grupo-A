@@ -208,4 +208,37 @@ public class TransferE2ETest {
 
         assertEquals(5000.0, readBalanceFromDashboard(accountA1.getAccountNumber()), 0.01);
     }
+
+    @Test
+    void cannotTransferWithInsufficientBalance() {
+        login(userA.getUsername());
+
+        fillAndSubmitTransfer(accountA1.getAccountNumber(), accountB1.getAccountNumber(), "9999");
+
+        String msg = waitForErrorMessage();
+        assertTrue(msg.contains("Insufficient funds"),
+                "Unexpected error message: " + msg);
+
+        assertEquals(5000.0, readBalanceFromDashboard(accountA1.getAccountNumber()), 0.01);
+        driver.manage().deleteAllCookies();
+        login(userB.getUsername());
+        assertEquals(1000.0, readBalanceFromDashboard(accountB1.getAccountNumber()), 0.01);
+    }
+
+
+    @Test
+    void cannotTransferNegativeAmount() {
+        login(userA.getUsername());
+
+        fillAndSubmitTransfer(accountA1.getAccountNumber(), accountB1.getAccountNumber(), "-100");
+
+        String msg = waitForErrorMessage();
+        assertTrue(msg.contains("Amount must be positive"),
+                "Unexpected error message: " + msg);
+
+        assertEquals(5000.0, readBalanceFromDashboard(accountA1.getAccountNumber()), 0.01);
+        driver.manage().deleteAllCookies();
+        login(userB.getUsername());
+        assertEquals(1000.0, readBalanceFromDashboard(accountB1.getAccountNumber()), 0.01);
+    }
 }
