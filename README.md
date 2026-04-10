@@ -60,7 +60,7 @@ En cuanto a mis tareas y responsabilidades en el proyecto he participado en el t
 
 #### **Alumno 4 - Vicente Navas Martinez**
 
-[Descripción de las tareas y responsabilidades principales del alumno en el proyecto]
+En cuanto a mis tareas y responsabilidades en el proyecto, he contribuido en todas las tareas que nos repartimos entre los miembros del grupo. Especialmente en las pruebas unitarias y en la implementación de pruebas de sistema.
 
 | Nº  |                                                           Commits                                                            |
 | :-: | :--------------------------------------------------------------------------------------------------------------------------: |
