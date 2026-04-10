@@ -156,6 +156,11 @@ public class TransferE2ETest {
         return driver.findElement(By.id("successMessage")).getText();
     }
 
+    private String waitForErrorMessage() {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("errorMessage")));
+        return driver.findElement(By.id("errorMessage")).getText();
+    }
+
 
     @Test
     void transferBetweenOwnAccounts() {
@@ -170,5 +175,37 @@ public class TransferE2ETest {
 
         assertEquals(5000.0 - amount, readBalanceFromDashboard(accountA1.getAccountNumber()), 0.01);
         assertEquals(2000.0 + amount, readBalanceFromDashboard(accountA2.getAccountNumber()), 0.01);
+    }
+
+    @Test
+    void transferBetweenDifferentUsers() {
+        login(userA.getUsername());
+
+        double amount = 300.0;
+        fillAndSubmitTransfer(accountA1.getAccountNumber(), accountB1.getAccountNumber(), "300");
+
+        String msg = waitForSuccessMessage();
+        assertTrue(msg.contains("Transfer completed successfully"),
+                "Unexpected success message: " + msg);
+
+        assertEquals(5000.0 - amount, readBalanceFromDashboard(accountA1.getAccountNumber()), 0.01);
+
+        driver.manage().deleteAllCookies();
+        login(userB.getUsername());
+        assertEquals(1000.0 + amount, readBalanceFromDashboard(accountB1.getAccountNumber()), 0.01);
+    }
+
+
+    @Test
+    void cannotTransferToSameAccount() {
+        login(userA.getUsername());
+
+        fillAndSubmitTransfer(accountA1.getAccountNumber(), accountA1.getAccountNumber(), "100");
+
+        String msg = waitForErrorMessage();
+        assertTrue(msg.contains("Cannot transfer to same account"),
+                "Unexpected error message: " + msg);
+
+        assertEquals(5000.0, readBalanceFromDashboard(accountA1.getAccountNumber()), 0.01);
     }
 }
