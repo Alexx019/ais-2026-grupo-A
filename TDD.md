@@ -212,7 +212,7 @@ if (request.getCustomerBalance() < (request.getAmount() * PORCENTAJE_SALDO_MINIM
 
 ![img_TDD_test5Correcto.png](img/capturas/test5Correcto.png)
 
-### Test 6: Debe aprobar un préstamo básico válido (Happy Path)
+### Test 6: Debe aprobar un préstamo básico válido 
 **INPUT y OUTPUT**: Cantidad: 20000, Plazo: 24, Saldo: 5000 -> "Aprobado"
 
 **Código de test**
