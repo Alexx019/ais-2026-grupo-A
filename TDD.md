@@ -165,6 +165,7 @@ if (request.getTermMonths() < PLAZO_MESES_MIN || request.getTermMonths() > PLAZO
     return  new LoanEvaluationResult(false, "Plazo no válido");
 }
 ```
+**Captura de que TODOS los test PASAN**
 
 ![img_TDD_test4.png](img/capturas/img_TDD_test4.png)
 
@@ -206,12 +207,15 @@ if (request.getCustomerBalance() < (request.getAmount() * PORCENTAJE_SALDO_MINIM
     return new LoanEvaluationResult(false, "Saldo insuficiente");
 }
 ```
+
+**Captura de que TODOS los test PASAN**
+
 ![img_TDD_test5Correcto.png](img/capturas/test5Correcto.png)
 
-Test 6: Debe aprobar un préstamo básico válido (Happy Path)
-INPUT y OUTPUT: Cantidad: 20000, Plazo: 24, Saldo: 5000 -> "Aprobado"
+### Test 6: Debe aprobar un préstamo básico válido (Happy Path)
+**INPUT y OUTPUT**: Cantidad: 20000, Plazo: 24, Saldo: 5000 -> "Aprobado"
 
-Código de test
+**Código de test**
 
 ```java
 @Test
@@ -228,11 +232,14 @@ void shouldApproveValidBasicLoan() {
 ```
 
 **Justificación de prueba exitosa:**
+
 De acuerdo con las instrucciones de la práctica, justificamos que esta prueba pasa de forma inmediata,  durante las iteraciones anteriores al programar los escenarios de rechazo, incluimos un retorno por defecto (return new LoanEvaluationResult(true, "Aprobado");) al final de la función principal. Por tanto, la funcionalidad base de aprobación implícita ya estaba cubierta por descarte.
 
 **Código mínimo para que el test pase**
 
 No es necesario añadir código nuevo en esta iteración. La lógica de la clase se mantiene exactamente igual que en el Test 5, ya que la condición de aprobación se cumple si el flujo de ejecución no entra en ninguno de los if de rechazo anteriores.
+
+**Captura de que TODOS los test PASAN**
 
 ![img_TDD_test6Correcto.png](img/capturas/test6Correcto.png)
 
@@ -378,4 +385,43 @@ request.setMonthlyIncome(3000);
 **Captura de que TODOS los tests PASAN tras la refactorización**
 
 ![Pasan](img/capturas/img_TDD_Pasan.png)
+
+### Test 10: Debe aprobar un préstamo cuando la cuota está dentro del límite de ingresos (Caso frontera Cuota <= 40%)
+
+**INPUT y OUTPUT**: Cantidad: 20000, Plazo: 24, Saldo: 5000, Ingresos: 2200, Euribor (Mock): 3.0 -> "Aprobado"
+
+**Código de test**
+```java
+@Test
+    void shouldApproveWhenPaymentIsWithinIncomeLimit() {
+
+        Mockito.when(euriborServiceMock.getEuribor()).thenReturn(3.0);
+
+        LoanRequest request = new LoanRequest();
+        request.setAmount(20000);
+        request.setTermMonths(24);
+        request.setCustomerBalance(5000);
+        request.setMonthlyIncome(2200);
+
+        LoanEvaluationResult result = algorithm.evaluate(request);
+
+        assertTrue(result.isApproved());
+        assertEquals("Aprobado", result.getReason());
+    }
+```
+**Justificación de prueba exitosa:**
+
+Justificamos que esta prueba pasa sin necesidad de ningún cambio porque al programar lo necesario para el test anterior ya se implementó la comprobación "if (monthlyPayment > request.getMonthlyIncome() * 0.40)" utilizando el operador mayor que (>). Por ello, cualquier valor que sea menor o exactamente igual al límite no activa el rechazo y permite que el flujo continúe hasta el retorno de éxito final.
+
+**Código mínimo para que el test pase:**
+
+No es necesario añadir código nuevo en esta iteración. La lógica de la clase se mantiene exactamente igual, ya que el diseño previo contemplaba correctamente el caso límite gracias al uso del operador (>) en la regla de negocio de la cuota máxima.
+
+**Captura de que TODOS los test PASAN**
+
+![Pasan](img/capturas/Captura_Test10.png)
+
+
+
+
 
