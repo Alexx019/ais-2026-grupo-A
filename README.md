@@ -74,7 +74,7 @@
 
 #### **Alumno 5 - Alejandro Arias Souto**
 
-[Descripción de las tareas y responsabilidades principales del alumno en el proyecto]
+En cuanto a responsabilidades, en el equipo yo me encargaba del sonarQube. En cuanto a tareas, he identificado un mal olor de variables y métodos mal nombrados, así como los primeros tests en el TDD. El resto de cosas nos las hemos repartido equitativamente entre todos.
 
 | Nº  |                                                           Commits                                                            |
 | :-: | :--------------------------------------------------------------------------------------------------------------------------: |
