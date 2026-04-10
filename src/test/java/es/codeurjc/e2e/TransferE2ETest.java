@@ -241,4 +241,23 @@ public class TransferE2ETest {
         login(userB.getUsername());
         assertEquals(1000.0, readBalanceFromDashboard(accountB1.getAccountNumber()), 0.01);
     }
+
+    @Test
+    void cannotTransferMoreThan20000() {
+        accountA1.setBalance(25000.0);
+        accountRepository.save(accountA1);
+
+        login(userA.getUsername());
+
+        fillAndSubmitTransfer(accountA1.getAccountNumber(), accountB1.getAccountNumber(), "20001");
+
+        String msg = waitForErrorMessage();
+        assertTrue(msg.contains("Amount exceeds maximum transfer limit"),
+                "Unexpected error message: " + msg);
+
+        assertEquals(25000.0, readBalanceFromDashboard(accountA1.getAccountNumber()), 0.01);
+        driver.manage().deleteAllCookies();
+        login(userB.getUsername());
+        assertEquals(1000.0, readBalanceFromDashboard(accountB1.getAccountNumber()), 0.01);
+    }
 }
