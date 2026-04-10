@@ -18,7 +18,7 @@
 
 #### **Alumno 1 - [Rodrigo Wiznez Valiente]**
 
-[Descripción de las tareas y responsabilidades principales del alumno en el proyecto]
+Acerca de mis tareas y rol en el grupo, me he encargado de entender e implementar la funcionalidad de preaprobación de préstamos con TDD, además de las otras tareas, las cuales nos hemos repartido por partes iguales.
 
 | Nº  |                                                           Commits                                                            |
 | :-: | :--------------------------------------------------------------------------------------------------------------------------: |
