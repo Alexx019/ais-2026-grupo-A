@@ -46,7 +46,7 @@ Acerca de mis tareas y rol en el grupo, me he encargado de entender e implementa
 
 #### **Alumno 3 - Pablo Cristina Jiménez**
 
-[Descripción de las tareas y responsabilidades principales del alumno en el proyecto]
+En cuanto a mis tareas y responsabilidades en el proyecto he participado en el todos los puntos que este requería, las tareas se han repartido a partes iguales, haciendo especial hincapie al principio en los issues de DRY, y finalmente realizando tests en TDD y pruebas web.
 
 | Nº  |                                                           Commits                                                            |
 | :-: | :--------------------------------------------------------------------------------------------------------------------------: |
