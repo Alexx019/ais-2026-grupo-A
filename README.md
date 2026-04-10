@@ -42,7 +42,7 @@ Acerca de mis tareas y rol en el grupo, me he encargado de entender e implementa
 |  4  |   [Caso de TDD implementado](https://github.com/Alexx019/ais-2026-grupo-A/tree/f2d9f6cb942c51d458b5477d1ccaa022412257d5)   |
 |  5  |                                       [Prueba de sistema implementada](https://github.com/Alexx019/ais-2026-grupo-A/tree/8566172b751f5f9e3d076cd425be7f19497e949b)                                      |
 
---
+---
 
 #### **Alumno 3 - Pablo Cristina Jiménez**
 
