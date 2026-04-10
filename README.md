@@ -32,15 +32,15 @@ Acerca de mis tareas y rol en el grupo, me he encargado de entender e implementa
 
 #### **Alumno 2 - Alvaro Gonzalez Gonzalez**
 
-[Descripción de las tareas y responsabilidades principales del alumno en el proyecto]
+En mi caso, yo me he enfocado especialmente en el uso de Selenium WebDriver para la realización de la tarea 5, supervisando los test creados para la clase TransferE2ETest
 
-| Nº  |                                                          Commits                                                           |
-| :-: | :------------------------------------------------------------------------------------------------------------------------: |
-|  1  |       [Issue detectada](https://github.com/Alexx019/ais-2026-grupo-A/tree/c0e4988782f4c8d181b291447f3ce59aeeb253c3)        |
-|  2  | [Prueba unitaria implementada](https://github.com/Alexx019/ais-2026-grupo-A/tree/d44893494b94fc23745bab45317fc7f42dbf7da0) |
-|  3  | [Refactorización implementada](https://github.com/Alexx019/ais-2026-grupo-A/tree/f56c9582764204a26be785938bc943b6f8d52dd8) |
-|  4  |   [Caso de TDD implementado](https://github.com/Alexx019/ais-2026-grupo-A/tree/f2d9f6cb942c51d458b5477d1ccaa022412257d5)   |
-|  5  |                                       [Prueba de sistema implementada](https://github.com/Alexx019/ais-2026-grupo-A/tree/8566172b751f5f9e3d076cd425be7f19497e949b)                                      |
+| Nº  |                                                           Commits                                                            |
+| :-: |:----------------------------------------------------------------------------------------------------------------------------:|
+|  1  |       [Issue detectada](https://github.com/Alexx019/ais-2026-grupo-A/commit/c0e4988782f4c8d181b291447f3ce59aeeb253c3)        |
+|  2  |  [Prueba unitaria implementada](https://github.com/Alexx019/ais-2026-grupo-A/commit/d44893494b94fc23745bab45317fc7f42dbf7da0)  |
+|  3  |  [Refactorización implementada](https://github.com/Alexx019/ais-2026-grupo-A/commit/f56c9582764204a26be785938bc943b6f8d52dd8)  |
+|  4  |    [Caso de TDD implementado](https://github.com/Alexx019/ais-2026-grupo-A/commit/f2d9f6cb942c51d458b5477d1ccaa022412257d5)    |
+|  5  | [Prueba de sistema implementada](https://github.com/Alexx019/ais-2026-grupo-A/commit/8566172b751f5f9e3d076cd425be7f19497e949b) |
 
 ---
 
