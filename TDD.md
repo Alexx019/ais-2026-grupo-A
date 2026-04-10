@@ -208,6 +208,34 @@ if (request.getCustomerBalance() < (request.getAmount() * PORCENTAJE_SALDO_MINIM
 ```
 ![img_TDD_test5Correcto.png](img/capturas/test5Correcto.png)
 
+Test 6: Debe aprobar un préstamo básico válido (Happy Path)
+INPUT y OUTPUT: Cantidad: 20000, Plazo: 24, Saldo: 5000 -> "Aprobado"
+
+Código de test
+
+```java
+@Test
+void shouldApproveValidBasicLoan() {
+    LoanRequest request = new LoanRequest();
+    request.setAmount(20000);
+    request.setTermMonths(24);
+    request.setCustomerBalance(5000);
+    LoanEvaluationResult result = algorithm.evaluate(request);
+
+    assertTrue(result.isApproved(), "El préstamo cumple todo y debería ser aprobado");
+    assertEquals("Aprobado", result.getReason());
+}
+```
+
+**Justificación de prueba exitosa:**
+De acuerdo con las instrucciones de la práctica, justificamos que esta prueba pasa de forma inmediata,  durante las iteraciones anteriores al programar los escenarios de rechazo, incluimos un retorno por defecto (return new LoanEvaluationResult(true, "Aprobado");) al final de la función principal. Por tanto, la funcionalidad base de aprobación implícita ya estaba cubierta por descarte.
+
+**Código mínimo para que el test pase**
+
+No es necesario añadir código nuevo en esta iteración. La lógica de la clase se mantiene exactamente igual que en el Test 5, ya que la condición de aprobación se cumple si el flujo de ejecución no entra en ninguno de los if de rechazo anteriores.
+
+![img_TDD_test6Correcto.png](img/capturas/test6Correcto.png)
+
 ### Test 7: Debe calcular el interés correctamente
 
 **INPUT y OUTPUT**: Euribor mockeado a 3.14 -> Interés = 2% + 3.14% = 5.14%
