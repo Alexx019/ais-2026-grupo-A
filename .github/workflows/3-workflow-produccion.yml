@@ -85,5 +85,5 @@ jobs:
       - name: Run Smoke Test
         run: mvn -B test -Dtest=SmokeTest --no-transfer-progress
         env:
-          APP_URL: https://banking-app-production.azurewebsites.net
+          APP_URL: https://banking-app-production-h4awerbsgwd5aqdd.spaincentral-01.azurewebsites.net
           EXPECTED_VERSION: ${{ needs.publish-docker.outputs.version }}
