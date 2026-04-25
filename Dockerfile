@@ -1,29 +1,23 @@
-# ============================================================
-# Stage 1: Build — compila el JAR con Maven
-# ============================================================
+# Stage 1: Build
 FROM eclipse-temurin:21-jdk-alpine AS build
 
 WORKDIR /app
 
-# Copiar descriptor de dependencias primero (mejor caché de capas)
+# Copiar el pom.xml
 COPY pom.xml .
-COPY .mvn/ .mvn/ 2>/dev/null || true
 
-# Descargar dependencias sin compilar el código fuente
-RUN mvn dependency:go-offline -B --no-transfer-progress 2>/dev/null || \
-    (apt-get update -q && apt-get install -qy maven 2>/dev/null) ; \
-    true
+# Copiar la carpeta .mvn solo si existe usando un wildcard
+# Esto evita que el build falle si la carpeta no está presente
+COPY .mvn? .mvn?
 
-# Instalar Maven si no está disponible (Alpine no lo incluye)
+# Instalar Maven (Alpine no lo trae)
 RUN apk add --no-cache maven
 
-# Descargar dependencias (capa reutilizable)
+# Descargar dependencias
 RUN mvn dependency:go-offline -B --no-transfer-progress
 
 # Copiar código fuente y compilar
 COPY src/ ./src/
-
-# Compilar saltando los tests (los tests de Selenium necesitan navegador)
 RUN mvn clean package -DskipTests -B --no-transfer-progress
 
 # ============================================================
