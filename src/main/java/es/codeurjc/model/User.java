@@ -200,7 +200,7 @@ public class User {
 
     public long getYearsWithBank() {
         if (registrationDate == null) return 0;
-        return LocalDate.now().getYear() - registrationDate.getYear();
+        return (long)LocalDate.now().getYear() - registrationDate.getYear();
     }
 
     public boolean hasMultipleProducts() {

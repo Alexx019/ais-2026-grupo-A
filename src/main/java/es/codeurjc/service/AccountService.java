@@ -97,7 +97,7 @@ public class AccountService {
 
     @Transactional
     public Account deposit(String accountNumber, double amount) {
-        return deposit(accountNumber, amount, "Quick deposit");
+        return this.deposit(accountNumber, amount, "Quick deposit");
     }
 
     @Transactional
