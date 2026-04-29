@@ -90,14 +90,13 @@ En cuanto a responsabilidades, en el equipo yo me encargaba del sonarQube. En cu
 
 
 ### Captura de la aplicación desplegada en Azure
-> Inserta aquí una captura dela aplicación desplegada. Debe aparecer la URL de la aplicación desplegada y el número de versión desplegada (pantalla de login)
 
-![Captura Aplicación en Azure](URL_captura_dashboard_azure)
+![Login Azure](img/capturas/login.png)
 
 
 ### Captura del dashboard de Azure con la última versión desplegada
-> Inserta aquí una captura del dashboard de Azure. La captura debe mostrar lo mismo que aparece en la diapositiva 26 de "Anexo -Despliegue de aplicaciones en Azure"
 
+![Overview Azure](img/capturas/Dashboard.png)
 
 ## Desarrollo con GitHubFlow
 
