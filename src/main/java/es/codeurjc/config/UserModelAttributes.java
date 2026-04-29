@@ -25,6 +25,9 @@ public class UserModelAttributes {
         if (principal instanceof UserDetails) {
             username = ((UserDetails) principal).getUsername();
         } else {
+            if (principal == null){
+                return "";
+            }
             username = principal.toString();
         }
         User user;
