@@ -12,11 +12,9 @@ import es.codeurjc.service.notifications.SmsNotificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * Service for managing bank accounts.
- */
 @Service
 public class AccountService {
 
@@ -38,9 +36,7 @@ public class AccountService {
         this.randomService = randomService;
     }
 
-    /**
-     * Create a new account
-     */
+
     public Account createAccount(User user, Account.AccountType accountType) {
         String accountNumber = generateAccountNumber();
         Account account = new Account(accountNumber, accountType, 0);
@@ -48,31 +44,23 @@ public class AccountService {
         return accountRepository.save(account);
     }
 
-    /**
-     * Generate account number
-     */
+
     private String generateAccountNumber() {
         return String.format("ES%010d", randomService.nextInt(1000000000));
     }
 
-    /**
-     * Get account by account number
-     */
+
     public Account getAccount(String accountNumber) {
         return accountRepository.findByAccountNumber(accountNumber)
                 .orElseThrow(() -> new IllegalArgumentException("Account not found"));
     }
 
-    /**
-     * Get all accounts for a user
-     */
+
     public List<Account> getUserAccounts(User user) {
         return accountRepository.findByUser(user);
     }
 
-    /**
-     * Deposit money into account
-     */
+
     @Transactional
     public Account deposit(String accountNumber, double amount, String description) {
         if (amount == 0) {
@@ -98,22 +86,18 @@ public class AccountService {
 
         Account savedAccount = accountRepository.save(account);
 
-        // Send notification
+
         sendDepositNotification(account,amount);
 
         return savedAccount;
     }
 
-    /**
-     * Quick deposit without description
-     */
+
     @Transactional
     public Account deposit(String accountNumber, double amount) {
         return deposit(accountNumber, amount, "Quick deposit");
     }
-    /**
-     * Withdraw money from account
-     */
+
     @Transactional
     public Account withdraw(String accountNumber, double amount, String description) {
         if (amount <= 0) {
@@ -127,14 +111,19 @@ public class AccountService {
         Account account = getAccount(accountNumber);
 
 
-        // Check balance
+        double withdrawnIn24h = getWithdrawnAmountInLast24Hours(account);
+        if (withdrawnIn24h + amount > 5000) {
+            throw new IllegalArgumentException("Daily withdrawal limit exceeded. Maximum allowed: 5000 EUR");
+        }
+
+
         if (account.getBalance() < amount) {
             throw new IllegalArgumentException("Insufficient funds");
         }
 
         account.withdraw(amount);
 
-        // Record transaction
+
         Transaction transaction = new Transaction(account, Transaction.TransactionType.WITHDRAWAL,
                 amount, description);
         transactionRepository.save(transaction);
@@ -159,9 +148,7 @@ public class AccountService {
         return savedAccount;
     }
 
-    /**
-     * Transfer money between accounts
-     */
+
     @Transactional
     public void transfer(String fromAccountNumber, String toAccountNumber, double amount) {
         if (amount <= 0) {
@@ -174,21 +161,17 @@ public class AccountService {
         Account sourceAccount = getAccount(fromAccountNumber);
         Account destinationAccount = getAccount(toAccountNumber);
 
-        // Validate same account
         if (sourceAccount.getAccountNumber().equals(destinationAccount.getAccountNumber())) { //Comparación usando la funcion equals()
             throw new IllegalArgumentException("Cannot transfer to same account");
         }
 
-        // Check balance
         if (sourceAccount.getBalance() < amount) {
             throw new IllegalArgumentException("Insufficient funds");
         }
 
-        // Perform transfer
         sourceAccount.withdraw(amount);
         destinationAccount.deposit(amount);
 
-        // Record transactions
         Transaction sentTransaction = new Transaction(sourceAccount,
                 Transaction.TransactionType.TRANSFER_SENT,
                 amount,
@@ -238,9 +221,6 @@ public class AccountService {
         }
     }
 
-    /**
-     * Delete account
-     */
     public void deleteAccount(String accountNumber) {
         Account account = getAccount(accountNumber);
 
@@ -251,21 +231,28 @@ public class AccountService {
         accountRepository.delete(account);
     }
 
-    /**
-     * Get account balance
-     */
     public double getBalance(String accountNumber) {
         Account account = getAccount(accountNumber);
         return account.getBalance();
     }
 
-    /**
-     * Get account transactions
-     */
     public List<Transaction> getTransactions(String accountNumber) {
         Account account = getAccount(accountNumber);
         return transactionRepository.findByAccountOrderByTimestampDesc(account);
     }
+
+
+    private double getWithdrawnAmountInLast24Hours(Account account) {
+        List<Transaction> allTransactions = transactionRepository.findByAccount(account);
+        LocalDateTime twentyFourHoursAgo = LocalDateTime.now().minusHours(24);
+
+        return allTransactions.stream()
+                .filter(t -> t.getType() == Transaction.TransactionType.WITHDRAWAL)
+                .filter(t -> t.getTimestamp().isAfter(twentyFourHoursAgo))
+                .mapToDouble(Transaction::getAmount)
+                .sum();
+    }
+
     private void sendDepositNotification(Account account, double amount) {
         User user = account.getUser();
         User.NotificationType notifType = user.getNotificationType();
