@@ -172,7 +172,7 @@ public class AccountServiceTest {
         verify(transactionRepository).save(any(Transaction.class));
         verify(accountRepository).save(account);
 
-        // Corregido: Usamos matches con una expresión regular que acepta coma o punto
+        
         verify(smsService).sendNotification(
                 eq(user),
                 eq(Notification.NotificationType.DEPOSIT),
@@ -233,7 +233,7 @@ public class AccountServiceTest {
         assertEquals(Transaction.TransactionType.DEPOSIT, transactionCaptor.getValue().getType());
         assertEquals("Quick deposit", transactionCaptor.getValue().getDescription());
 
-        // Corregido: Buscamos "140" y "EUR" por separado o permitimos cualquier carácter entre ellos
+        
         verify(emailService).sendNotification(
                 eq(user),
                 eq(Notification.NotificationType.DEPOSIT),
@@ -283,7 +283,7 @@ public class AccountServiceTest {
                 eq(user),
                 eq(Notification.NotificationType.WITHDRAWAL),
                 eq("Withdrawal"),
-                argThat(s -> s.contains("150,00") || s.contains("150.00")) // Solución aquí
+                argThat(s -> s.contains("150,00") || s.contains("150.00")) 
         );
     }
 
@@ -325,6 +325,111 @@ public class AccountServiceTest {
 
         assertEquals("Amount exceeds maximum withdrawal limit", ex.getMessage());
         verifyNoInteractions(accountRepository, transactionRepository, emailService, smsService);
+    }
+
+    @Test
+    void testWithdraw_ExceedsDailyLimit_ThrowsException() {
+        String accountNumber = "ES2234567893";
+        User user = buildEmailUser();
+        Account account = buildAccount(accountNumber, Account.AccountType.CHECKING, 5000, user);
+
+        
+        Transaction previousWithdrawal = new Transaction(account, Transaction.TransactionType.WITHDRAWAL, 3000, "ATM");
+        previousWithdrawal.setTimestamp(java.time.LocalDateTime.now().minusHours(1));
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
+        when(transactionRepository.findByAccount(account)).thenReturn(List.of(previousWithdrawal));
+
+        
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.withdraw(accountNumber, 2500, "ATM")
+        );
+
+        assertEquals("Daily withdrawal limit exceeded. Maximum allowed: 5000 EUR", ex.getMessage());
+        verify(transactionRepository, never()).save(any());
+        verify(accountRepository, never()).save(any());
+        verifyNoInteractions(emailService, smsService);
+    }
+
+    @Test
+    void testWithdraw_WithinDailyLimit_Success() {
+        String accountNumber = "ES2234567894";
+        User user = buildEmailUser();
+        Account account = buildAccount(accountNumber, Account.AccountType.CHECKING, 5000, user);
+
+        
+        Transaction previousWithdrawal = new Transaction(account, Transaction.TransactionType.WITHDRAWAL, 2000, "ATM");
+        previousWithdrawal.setTimestamp(java.time.LocalDateTime.now().minusHours(1));
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
+        when(transactionRepository.findByAccount(account)).thenReturn(List.of(previousWithdrawal));
+        when(accountRepository.save(any(Account.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        
+        Account result = accountService.withdraw(accountNumber, 2500, "ATM");
+
+        assertEquals(2500, result.getBalance(), 0.001);
+        verify(transactionRepository).save(any(Transaction.class));
+        verify(accountRepository).save(account);
+        verify(emailService).sendNotification(
+                eq(user),
+                eq(Notification.NotificationType.WITHDRAWAL),
+                eq("Withdrawal Confirmation"),
+                argThat(s -> s.contains("2500,00") || s.contains("2500.00"))
+        );
+    }
+
+    @Test
+    void testWithdraw_MultipleDailyWithdrawals_CountsCorrectly() {
+        String accountNumber = "ES2234567895";
+        User user = buildEmailUser();
+        Account account = buildAccount(accountNumber, Account.AccountType.CHECKING, 5000, user);
+
+        
+        Transaction withdrawal1 = new Transaction(account, Transaction.TransactionType.WITHDRAWAL, 1000, "ATM");
+        withdrawal1.setTimestamp(java.time.LocalDateTime.now().minusHours(20));
+
+        Transaction withdrawal2 = new Transaction(account, Transaction.TransactionType.WITHDRAWAL, 2000, "ATM");
+        withdrawal2.setTimestamp(java.time.LocalDateTime.now().minusHours(10));
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
+        when(transactionRepository.findByAccount(account)).thenReturn(List.of(withdrawal1, withdrawal2));
+
+        
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.withdraw(accountNumber, 2500, "ATM")
+        );
+
+        assertEquals("Daily withdrawal limit exceeded. Maximum allowed: 5000 EUR", ex.getMessage());
+    }
+
+    @Test
+    void testWithdraw_OldWithdrawals_NotCounted() {
+        String accountNumber = "ES2234567896";
+        User user = buildEmailUser();
+        Account account = buildAccount(accountNumber, Account.AccountType.CHECKING, 5000, user);
+
+        
+        Transaction oldWithdrawal = new Transaction(account, Transaction.TransactionType.WITHDRAWAL, 4000, "ATM");
+        oldWithdrawal.setTimestamp(java.time.LocalDateTime.now().minusHours(25));
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
+        when(transactionRepository.findByAccount(account)).thenReturn(List.of(oldWithdrawal));
+        when(accountRepository.save(any(Account.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Account result = accountService.withdraw(accountNumber, 3000, "ATM");
+
+        assertEquals(2000, result.getBalance(), 0.001);
+        verify(transactionRepository).save(any(Transaction.class));
+        verify(accountRepository).save(account);
+        verify(emailService).sendNotification(
+                eq(user),
+                eq(Notification.NotificationType.WITHDRAWAL),
+                eq("Withdrawal Confirmation"),
+                argThat(s -> s.contains("2000,00") || s.contains("2000.00"))
+        );
     }
 
     @Test
