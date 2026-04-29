@@ -116,9 +116,9 @@ En cuanto a responsabilidades, en el equipo yo me encargaba del sonarQube. En cu
 
 | Tarea 3| Alumno/es asignado/s | Commits asociado |
 |:--- |:--- |:--- |
-| feature-1 | [Nombre 1], [Nombre 2] | [Commit 1](URL_commit_1), [Commit 2](URL_commit_2) |
-| feature-2 | [Nombre 3], [Nombre 4] | [Commit 3](URL_commit_3), [Commit 4](URL_commit_4) |
-| refactoring-1 | [Nombre 5] | [Commit 5](URL_commit_5) ... |
+| feature-1 | [Rodrigo Wiznez Valiente], [Vicente Navas Martínez] | [Commit 1](URL_commit_1), [Commit 2](URL_commit_2) |
+| feature-2 | [Pablo Cristina Jiménez ], [Pablo Cristina Jiménez ] | [Commit 3](URL_commit_3), [Commit 4](URL_commit_4) |
+| refactoring-1 | [Alejandro Arias Souto] | [Commit 5](URL_commit_5) ... |
 ### Pasos seguidos
 
 Una vez creados los workflows y funcionando estos, pasamos a crear la nueva funcionalidad utilizando GithubFlow:
