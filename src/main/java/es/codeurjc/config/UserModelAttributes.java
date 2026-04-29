@@ -17,7 +17,7 @@ public class UserModelAttributes {
 
     @ModelAttribute("fullname")
     public String getFullName() {
-        if (SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (SecurityContextHolder.getContext() == null || SecurityContextHolder.getContext().getAuthentication() == null) {
             return "";
         }
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
