@@ -25,6 +25,8 @@ public class DashboardController {
     private final UserService userService;
     private final AccountService accountService;
     private final LoanService loanService;
+
+    private static final String Error = "error";
     
     public DashboardController(UserService userService,
                               AccountService accountService,
@@ -48,8 +50,8 @@ public class DashboardController {
             
             return "dashboard";
         } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-            return "error";
+            model.addAttribute(Error, e.getMessage());
+            return Error;
         }
     }
     
@@ -69,8 +71,8 @@ public class DashboardController {
             
             return "transactions";
         } catch (Exception e) {
-            model.addAttribute("error", e.getMessage());
-            return "error";
+            model.addAttribute(Error, e.getMessage());
+            return Error;
         }
     }
 }

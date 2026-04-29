@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
 @Service
 public class AccountService {
 
@@ -60,7 +61,6 @@ public class AccountService {
         return accountRepository.findByUser(user);
     }
 
-
     @Transactional
     public Account deposit(String accountNumber, double amount, String description) {
         if (amount == 0) {
@@ -77,15 +77,18 @@ public class AccountService {
         }
 
         Account account = getAccount(accountNumber);
+
+
+        if (account.getUser().isBanned()) {
+            throw new IllegalArgumentException("User account is banned");
+        }
         account.deposit(amount);
 
-        // Record transaction
         Transaction transaction = new Transaction(account, Transaction.TransactionType.DEPOSIT,
                 amount, description);
         transactionRepository.save(transaction);
 
         Account savedAccount = accountRepository.save(account);
-
 
         sendDepositNotification(account,amount);
 
@@ -95,7 +98,7 @@ public class AccountService {
 
     @Transactional
     public Account deposit(String accountNumber, double amount) {
-        return deposit(accountNumber, amount, "Quick deposit");
+        return this.deposit(accountNumber, amount, "Quick deposit");
     }
 
     @Transactional
@@ -110,10 +113,8 @@ public class AccountService {
 
         Account account = getAccount(accountNumber);
 
-
-        double withdrawnIn24h = getWithdrawnAmountInLast24Hours(account);
-        if (withdrawnIn24h + amount > 5000) {
-            throw new IllegalArgumentException("Daily withdrawal limit exceeded. Maximum allowed: 5000 EUR");
+        if (account.getUser().isBanned()) {
+            throw new IllegalArgumentException("User account is banned");
         }
 
 
@@ -122,7 +123,6 @@ public class AccountService {
         }
 
         account.withdraw(amount);
-
 
         Transaction transaction = new Transaction(account, Transaction.TransactionType.WITHDRAWAL,
                 amount, description);
@@ -160,6 +160,14 @@ public class AccountService {
 
         Account sourceAccount = getAccount(fromAccountNumber);
         Account destinationAccount = getAccount(toAccountNumber);
+
+        if (sourceAccount.getUser().isBanned()) {
+            throw new IllegalArgumentException("Source user account is banned");
+        }
+
+        if (destinationAccount.getUser().isBanned()) {
+            throw new IllegalArgumentException("Destination user account is banned");
+        }
 
         if (sourceAccount.getAccountNumber().equals(destinationAccount.getAccountNumber())) { //Comparación usando la funcion equals()
             throw new IllegalArgumentException("Cannot transfer to same account");
@@ -221,6 +229,7 @@ public class AccountService {
         }
     }
 
+
     public void deleteAccount(String accountNumber) {
         Account account = getAccount(accountNumber);
 
@@ -231,10 +240,12 @@ public class AccountService {
         accountRepository.delete(account);
     }
 
+
     public double getBalance(String accountNumber) {
         Account account = getAccount(accountNumber);
         return account.getBalance();
     }
+
 
     public List<Transaction> getTransactions(String accountNumber) {
         Account account = getAccount(accountNumber);
