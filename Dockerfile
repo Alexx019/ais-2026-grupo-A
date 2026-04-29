@@ -36,7 +36,7 @@ RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 WORKDIR /app
 
 # Copiar solo el JAR generado desde el stage de build
-COPY --from=build /app/target/banking-app-1.0.0.jar app.jar
+COPY --from=build /app/target/banking-app-*.jar app.jar
 
 # Cambiar propietario al usuario de la app
 RUN chown appuser:appgroup app.jar
