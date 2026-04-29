@@ -104,9 +104,8 @@ En cuanto a responsabilidades, en el equipo yo me encargaba del sonarQube. En cu
 
 | Tarea 1 | Alumno/es asignado/s | Commits asociado |
 |:--- |:--- |:--- |
-| feature-1 | [Nombre 1], [Nombre 2] | [Commit 1](URL_commit_1), [Commit 2](URL_commit_2) |
-| feature-2 | [Nombre 3], [Nombre 4] | [Commit 3](URL_commit_3), [Commit 4](URL_commit_4) |
-| refactoring-1 | [Nombre 5] | [Commit 5](URL_commit_5) ... |
+| Main | [Alejandro Arias Souto] | [Commit 1](https://github.com/Alexx019/ais-2026-grupo-A/commit/0661e4e79cf0c2e8b8a7400d1f1ace6d325d6060) |
+
 
 | Tarea 2 | Alumno/es asignado/s | Commits asociado |
 |:--- |:--- |:--- |
