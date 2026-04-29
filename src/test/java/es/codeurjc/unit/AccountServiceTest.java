@@ -158,6 +158,27 @@ public class AccountServiceTest {
     }
 
     @Test
+    void testDeposit_WhenUserBanned_ThrowsExceptionAndDoesNotPersistOrNotify() {
+        String accountNumber = "ES1234567000";
+        User user = buildEmailUser();
+        user.setBanned(true);
+        Account account = buildAccount(accountNumber, Account.AccountType.SAVINGS, 100, user);
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.deposit(accountNumber, 50, "Salary")
+        );
+
+        assertEquals("User account is banned", ex.getMessage());
+        assertEquals(100, account.getBalance(), 0.001);
+        verify(transactionRepository, never()).save(any(Transaction.class));
+        verify(accountRepository, never()).save(any(Account.class));
+        verifyNoInteractions(emailService, smsService);
+    }
+
+    @Test
     void testDeposit_WithValidAmount_UpdatesBalanceAndSendsSms() {
         String accountNumber = "ES1234567891";
         User user = buildSmsUser();
@@ -172,7 +193,7 @@ public class AccountServiceTest {
         verify(transactionRepository).save(any(Transaction.class));
         verify(accountRepository).save(account);
 
-        // Corregido: Usamos matches con una expresión regular que acepta coma o punto
+        
         verify(smsService).sendNotification(
                 eq(user),
                 eq(Notification.NotificationType.DEPOSIT),
@@ -233,7 +254,7 @@ public class AccountServiceTest {
         assertEquals(Transaction.TransactionType.DEPOSIT, transactionCaptor.getValue().getType());
         assertEquals("Quick deposit", transactionCaptor.getValue().getDescription());
 
-        // Corregido: Buscamos "140" y "EUR" por separado o permitimos cualquier carácter entre ellos
+        
         verify(emailService).sendNotification(
                 eq(user),
                 eq(Notification.NotificationType.DEPOSIT),
@@ -266,6 +287,27 @@ public class AccountServiceTest {
     }
 
     @Test
+    void testWithdraw_WhenUserBanned_ThrowsExceptionAndDoesNotPersistOrNotify() {
+        String accountNumber = "ES2234567000";
+        User user = buildEmailUser();
+        user.setBanned(true);
+        Account account = buildAccount(accountNumber, Account.AccountType.CHECKING, 100, user);
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.withdraw(accountNumber, 40, "ATM")
+        );
+
+        assertEquals("User account is banned", ex.getMessage());
+        assertEquals(100, account.getBalance(), 0.001);
+        verify(transactionRepository, never()).save(any(Transaction.class));
+        verify(accountRepository, never()).save(any(Account.class));
+        verifyNoInteractions(emailService, smsService);
+    }
+
+    @Test
     void testWithdraw_WithValidAmount_UpdatesBalanceAndSendsSms() {
         String accountNumber = "ES2234567891";
         User user = buildSmsUser();
@@ -283,7 +325,7 @@ public class AccountServiceTest {
                 eq(user),
                 eq(Notification.NotificationType.WITHDRAWAL),
                 eq("Withdrawal"),
-                argThat(s -> s.contains("150,00") || s.contains("150.00")) // Solución aquí
+                argThat(s -> s.contains("150,00") || s.contains("150.00")) 
         );
     }
 
@@ -328,6 +370,111 @@ public class AccountServiceTest {
     }
 
     @Test
+    void testWithdraw_ExceedsDailyLimit_ThrowsException() {
+        String accountNumber = "ES2234567893";
+        User user = buildEmailUser();
+        Account account = buildAccount(accountNumber, Account.AccountType.CHECKING, 5000, user);
+
+        
+        Transaction previousWithdrawal = new Transaction(account, Transaction.TransactionType.WITHDRAWAL, 3000, "ATM");
+        previousWithdrawal.setTimestamp(java.time.LocalDateTime.now().minusHours(1));
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
+        when(transactionRepository.findByAccount(account)).thenReturn(List.of(previousWithdrawal));
+
+        
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.withdraw(accountNumber, 2500, "ATM")
+        );
+
+        assertEquals("Daily withdrawal limit exceeded. Maximum allowed: 5000 EUR", ex.getMessage());
+        verify(transactionRepository, never()).save(any());
+        verify(accountRepository, never()).save(any());
+        verifyNoInteractions(emailService, smsService);
+    }
+
+    @Test
+    void testWithdraw_WithinDailyLimit_Success() {
+        String accountNumber = "ES2234567894";
+        User user = buildEmailUser();
+        Account account = buildAccount(accountNumber, Account.AccountType.CHECKING, 5000, user);
+
+        
+        Transaction previousWithdrawal = new Transaction(account, Transaction.TransactionType.WITHDRAWAL, 2000, "ATM");
+        previousWithdrawal.setTimestamp(java.time.LocalDateTime.now().minusHours(1));
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
+        when(transactionRepository.findByAccount(account)).thenReturn(List.of(previousWithdrawal));
+        when(accountRepository.save(any(Account.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        
+        Account result = accountService.withdraw(accountNumber, 2500, "ATM");
+
+        assertEquals(2500, result.getBalance(), 0.001);
+        verify(transactionRepository).save(any(Transaction.class));
+        verify(accountRepository).save(account);
+        verify(emailService).sendNotification(
+                eq(user),
+                eq(Notification.NotificationType.WITHDRAWAL),
+                eq("Withdrawal Confirmation"),
+                argThat(s -> s.contains("2500,00") || s.contains("2500.00"))
+        );
+    }
+
+    @Test
+    void testWithdraw_MultipleDailyWithdrawals_CountsCorrectly() {
+        String accountNumber = "ES2234567895";
+        User user = buildEmailUser();
+        Account account = buildAccount(accountNumber, Account.AccountType.CHECKING, 5000, user);
+
+        
+        Transaction withdrawal1 = new Transaction(account, Transaction.TransactionType.WITHDRAWAL, 1000, "ATM");
+        withdrawal1.setTimestamp(java.time.LocalDateTime.now().minusHours(20));
+
+        Transaction withdrawal2 = new Transaction(account, Transaction.TransactionType.WITHDRAWAL, 2000, "ATM");
+        withdrawal2.setTimestamp(java.time.LocalDateTime.now().minusHours(10));
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
+        when(transactionRepository.findByAccount(account)).thenReturn(List.of(withdrawal1, withdrawal2));
+
+        
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.withdraw(accountNumber, 2500, "ATM")
+        );
+
+        assertEquals("Daily withdrawal limit exceeded. Maximum allowed: 5000 EUR", ex.getMessage());
+    }
+
+    @Test
+    void testWithdraw_OldWithdrawals_NotCounted() {
+        String accountNumber = "ES2234567896";
+        User user = buildEmailUser();
+        Account account = buildAccount(accountNumber, Account.AccountType.CHECKING, 5000, user);
+
+        
+        Transaction oldWithdrawal = new Transaction(account, Transaction.TransactionType.WITHDRAWAL, 4000, "ATM");
+        oldWithdrawal.setTimestamp(java.time.LocalDateTime.now().minusHours(25));
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
+        when(transactionRepository.findByAccount(account)).thenReturn(List.of(oldWithdrawal));
+        when(accountRepository.save(any(Account.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        Account result = accountService.withdraw(accountNumber, 3000, "ATM");
+
+        assertEquals(2000, result.getBalance(), 0.001);
+        verify(transactionRepository).save(any(Transaction.class));
+        verify(accountRepository).save(account);
+        verify(emailService).sendNotification(
+                eq(user),
+                eq(Notification.NotificationType.WITHDRAWAL),
+                eq("Withdrawal Confirmation"),
+                argThat(s -> s.contains("2000,00") || s.contains("2000.00"))
+        );
+    }
+
+    @Test
     void testTransfer_ValidAmount_UpdatesBothBalancesAndSendsEmail() {
         String from = "ES1111111111";
         String to = "ES2222222222";
@@ -363,6 +510,62 @@ public class AccountServiceTest {
                 contains("from ES1111111111")
         );
         verifyNoInteractions(smsService);
+    }
+
+    @Test
+    void testTransfer_WhenSourceUserBanned_ThrowsExceptionAndDoesNotPersistOrNotify() {
+        String from = "ES1010101010";
+        String to = "ES2020202020";
+
+        User fromUser = buildEmailUser();
+        fromUser.setBanned(true);
+        User toUser = buildEmailUser();
+
+        Account fromAccount = buildAccount(from, Account.AccountType.CHECKING, 300, fromUser);
+        Account toAccount = buildAccount(to, Account.AccountType.SAVINGS, 50, toUser);
+
+        when(accountRepository.findByAccountNumber(from)).thenReturn(Optional.of(fromAccount));
+        when(accountRepository.findByAccountNumber(to)).thenReturn(Optional.of(toAccount));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.transfer(from, to, 100)
+        );
+
+        assertEquals("Source user account is banned", ex.getMessage());
+        assertEquals(300, fromAccount.getBalance(), 0.001);
+        assertEquals(50, toAccount.getBalance(), 0.001);
+        verify(transactionRepository, never()).save(any(Transaction.class));
+        verify(accountRepository, never()).save(any(Account.class));
+        verifyNoInteractions(emailService, smsService);
+    }
+
+    @Test
+    void testTransfer_WhenDestinationUserBanned_ThrowsExceptionAndDoesNotPersistOrNotify() {
+        String from = "ES3030303030";
+        String to = "ES4040404040";
+
+        User fromUser = buildEmailUser();
+        User toUser = buildEmailUser();
+        toUser.setBanned(true);
+
+        Account fromAccount = buildAccount(from, Account.AccountType.CHECKING, 300, fromUser);
+        Account toAccount = buildAccount(to, Account.AccountType.SAVINGS, 50, toUser);
+
+        when(accountRepository.findByAccountNumber(from)).thenReturn(Optional.of(fromAccount));
+        when(accountRepository.findByAccountNumber(to)).thenReturn(Optional.of(toAccount));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.transfer(from, to, 100)
+        );
+
+        assertEquals("Destination user account is banned", ex.getMessage());
+        assertEquals(300, fromAccount.getBalance(), 0.001);
+        assertEquals(50, toAccount.getBalance(), 0.001);
+        verify(transactionRepository, never()).save(any(Transaction.class));
+        verify(accountRepository, never()).save(any(Account.class));
+        verifyNoInteractions(emailService, smsService);
     }
 
     @Test
