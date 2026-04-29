@@ -158,6 +158,27 @@ public class AccountServiceTest {
     }
 
     @Test
+    void testDeposit_WhenUserBanned_ThrowsExceptionAndDoesNotPersistOrNotify() {
+        String accountNumber = "ES1234567000";
+        User user = buildEmailUser();
+        user.setBanned(true);
+        Account account = buildAccount(accountNumber, Account.AccountType.SAVINGS, 100, user);
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.deposit(accountNumber, 50, "Salary")
+        );
+
+        assertEquals("User account is banned", ex.getMessage());
+        assertEquals(100, account.getBalance(), 0.001);
+        verify(transactionRepository, never()).save(any(Transaction.class));
+        verify(accountRepository, never()).save(any(Account.class));
+        verifyNoInteractions(emailService, smsService);
+    }
+
+    @Test
     void testDeposit_WithValidAmount_UpdatesBalanceAndSendsSms() {
         String accountNumber = "ES1234567891";
         User user = buildSmsUser();
@@ -266,6 +287,27 @@ public class AccountServiceTest {
     }
 
     @Test
+    void testWithdraw_WhenUserBanned_ThrowsExceptionAndDoesNotPersistOrNotify() {
+        String accountNumber = "ES2234567000";
+        User user = buildEmailUser();
+        user.setBanned(true);
+        Account account = buildAccount(accountNumber, Account.AccountType.CHECKING, 100, user);
+
+        when(accountRepository.findByAccountNumber(accountNumber)).thenReturn(Optional.of(account));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.withdraw(accountNumber, 40, "ATM")
+        );
+
+        assertEquals("User account is banned", ex.getMessage());
+        assertEquals(100, account.getBalance(), 0.001);
+        verify(transactionRepository, never()).save(any(Transaction.class));
+        verify(accountRepository, never()).save(any(Account.class));
+        verifyNoInteractions(emailService, smsService);
+    }
+
+    @Test
     void testWithdraw_WithValidAmount_UpdatesBalanceAndSendsSms() {
         String accountNumber = "ES2234567891";
         User user = buildSmsUser();
@@ -363,6 +405,62 @@ public class AccountServiceTest {
                 contains("from ES1111111111")
         );
         verifyNoInteractions(smsService);
+    }
+
+    @Test
+    void testTransfer_WhenSourceUserBanned_ThrowsExceptionAndDoesNotPersistOrNotify() {
+        String from = "ES1010101010";
+        String to = "ES2020202020";
+
+        User fromUser = buildEmailUser();
+        fromUser.setBanned(true);
+        User toUser = buildEmailUser();
+
+        Account fromAccount = buildAccount(from, Account.AccountType.CHECKING, 300, fromUser);
+        Account toAccount = buildAccount(to, Account.AccountType.SAVINGS, 50, toUser);
+
+        when(accountRepository.findByAccountNumber(from)).thenReturn(Optional.of(fromAccount));
+        when(accountRepository.findByAccountNumber(to)).thenReturn(Optional.of(toAccount));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.transfer(from, to, 100)
+        );
+
+        assertEquals("Source user account is banned", ex.getMessage());
+        assertEquals(300, fromAccount.getBalance(), 0.001);
+        assertEquals(50, toAccount.getBalance(), 0.001);
+        verify(transactionRepository, never()).save(any(Transaction.class));
+        verify(accountRepository, never()).save(any(Account.class));
+        verifyNoInteractions(emailService, smsService);
+    }
+
+    @Test
+    void testTransfer_WhenDestinationUserBanned_ThrowsExceptionAndDoesNotPersistOrNotify() {
+        String from = "ES3030303030";
+        String to = "ES4040404040";
+
+        User fromUser = buildEmailUser();
+        User toUser = buildEmailUser();
+        toUser.setBanned(true);
+
+        Account fromAccount = buildAccount(from, Account.AccountType.CHECKING, 300, fromUser);
+        Account toAccount = buildAccount(to, Account.AccountType.SAVINGS, 50, toUser);
+
+        when(accountRepository.findByAccountNumber(from)).thenReturn(Optional.of(fromAccount));
+        when(accountRepository.findByAccountNumber(to)).thenReturn(Optional.of(toAccount));
+
+        IllegalArgumentException ex = assertThrows(
+                IllegalArgumentException.class,
+                () -> accountService.transfer(from, to, 100)
+        );
+
+        assertEquals("Destination user account is banned", ex.getMessage());
+        assertEquals(300, fromAccount.getBalance(), 0.001);
+        assertEquals(50, toAccount.getBalance(), 0.001);
+        verify(transactionRepository, never()).save(any(Transaction.class));
+        verify(accountRepository, never()).save(any(Account.class));
+        verifyNoInteractions(emailService, smsService);
     }
 
     @Test
