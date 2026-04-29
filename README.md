@@ -115,7 +115,7 @@ En cuanto a responsabilidades, en el equipo yo me encargaba del sonarQube. En cu
 
 | Tarea 3| Alumno/es asignado/s | Commits asociado |
 |:--- |:--- |:--- |
-| feature-1 | [Rodrigo Wiznez Valiente], [Vicente Navas Martínez] | [Commit 1]([URL_commit_1](https://github.com/Alexx019/ais-2026-grupo-A/commit/e41be157727b76e4e542a580be4cce16cf707f03)), [Commit 2]([URL_commit_2](https://github.com/Alexx019/ais-2026-grupo-A/commit/5707ff38c7cd498d6fa3e98f1129caf4ede1601f)) |
+| feature-1 | [Rodrigo Wiznez Valiente], [Vicente Navas Martínez] | [Commit 1]([URL_commit_1](https://github.com/Alexx019/ais-2026-grupo-A/commit/e41be157727b76e4e542a580be4cce16cf707f03), [Commit 2]([URL_commit_2](https://github.com/Alexx019/ais-2026-grupo-A/commit/5707ff38c7cd498d6fa3e98f1129caf4ede1601f) |
 | feature-2 | [Pablo Cristina Jiménez ], [Pablo Cristina Jiménez ] | [Commit 3](URL_commit_3), [Commit 4](URL_commit_4) |
 | refactoring-1 | [Alejandro Arias Souto] | [Commit 5](URL_commit_5) ... |
 ### Pasos seguidos
