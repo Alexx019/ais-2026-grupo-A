@@ -12,6 +12,7 @@ import es.codeurjc.service.notifications.SmsNotificationService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 
@@ -250,6 +251,19 @@ public class AccountService {
         Account account = getAccount(accountNumber);
         return transactionRepository.findByAccountOrderByTimestampDesc(account);
     }
+
+
+    private double getWithdrawnAmountInLast24Hours(Account account) {
+        List<Transaction> allTransactions = transactionRepository.findByAccount(account);
+        LocalDateTime twentyFourHoursAgo = LocalDateTime.now().minusHours(24);
+
+        return allTransactions.stream()
+                .filter(t -> t.getType() == Transaction.TransactionType.WITHDRAWAL)
+                .filter(t -> t.getTimestamp().isAfter(twentyFourHoursAgo))
+                .mapToDouble(Transaction::getAmount)
+                .sum();
+    }
+
     private void sendDepositNotification(Account account, double amount) {
         User user = account.getUser();
         User.NotificationType notifType = user.getNotificationType();
