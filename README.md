@@ -128,7 +128,83 @@ Clonamos el repositorio
 $ git clone git@github.com:codigus-formacion-se/banking-app-2026.git
 ```
 
-> Inserta aquí todos los comandos que has utilizado para crear la rama, implementar la funcionalidad, hacer el commit y push a GitHub, crear el pull request y hacer el merge a main. Acompaña cada comando con una breve explicación de lo que has hecho.
+1. **Actualizar la rama principal y crear la rama de trabajo.** Primero se actualizó `main` para partir de la versión base correcta y después se creó la rama correspondiente a la tarea asignada.
+
+```bash
+git checkout main
+git pull origin main
+git checkout -b feature-2
+git push -u origin feature-2
+```
+
+- `git checkout main`: cambia a la rama principal.
+- `git pull origin main`: descarga la última versión de `main` desde GitHub.
+- `git checkout -b feature-2`: crea la rama `feature-2` y cambia a ella.
+- `git push -u origin feature-2`: sube la rama a GitHub y la enlaza con la rama remota.
+
+2. **Implementar la funcionalidad.** En la rama creada se desarrolló la nueva funcionalidad pedida en la práctica. En `feature-2`, se añadió el atributo `banned` a la entidad usuario para impedir operaciones cuando su valor fuera `true`.
+
+```bash
+# edición del código fuente en la rama feature-2
+```
+
+3. **Hacer el commit de funcionalidad.** La práctica exige que el primer commit de cada feature corresponda únicamente a la funcionalidad implementada.
+
+```bash
+git add .
+git commit -m "Add banned attribute and block operations"
+```
+
+- `git add .`: prepara los cambios realizados para incluirlos en el commit.
+- `git commit -m "..."`: guarda un commit con el cambio funcional.
+
+4. **Añadir las pruebas unitarias y hacer su commit.** Después se incorporaron las pruebas necesarias para cubrir la nueva funcionalidad, tal como exige el segundo commit de cada feature.
+
+```bash
+# edición de los tests unitarios
+git add .
+git commit -m "Add unit tests for banned users"
+```
+
+- `git add .`: añade los cambios de los tests al área de preparación.
+- `git commit -m "..."`: crea el commit de pruebas.
+
+5. **Actualizar la versión antes del pull request.** Antes de abrir el pull request a `main`, se actualizó la versión del proyecto en `pom.xml` siguiendo SemVer. Para `feature-2` la versión resultante debía ser `1.1.0`; para `refactoring-1`, `1.1.1`; y para `feature-1`, `1.2.0`.
+
+```bash
+# editar pom.xml
+git add pom.xml
+git commit -m "Bump version to 1.1.0"
+```
+
+- Se modifica `pom.xml` con la nueva versión.
+- `git add pom.xml`: prepara el cambio de versión.
+- `git commit -m "Bump version to 1.1.0"`: guarda el commit del cambio de versión.
+
+6. **Subir la rama a GitHub.** Una vez completados los commits, se subieron todos los cambios de la rama al repositorio remoto.
+
+```bash
+git push origin feature-2
+```
+
+- `git push origin feature-2`: publica en GitHub todos los commits realizados en la rama.
+
+7. **Crear el pull request.** Con la rama ya publicada, se abrió un pull request desde `feature-2` hacia `main`, que es el mecanismo obligatorio de integración indicado en la práctica. En este paso se ejecuta el workflow asociado a las pull requests contra `main`, por lo que en la memoria debe incluirse también el enlace a esa ejecución.
+
+```bash
+# el pull request se crea desde la interfaz web de GitHub
+# base: main <- compare: feature-2
+```
+
+8. **Hacer el merge a `main`.** Tras revisar el pull request y comprobar que los workflows asociados terminaban correctamente, se realizó el merge a `main`. Después se actualizó la rama principal en local para seguir trabajando sobre el estado ya integrado.
+
+```bash
+git checkout main
+git pull origin main
+```
+
+- `git checkout main`: vuelve a la rama principal.
+- `git pull origin main`: descarga en local el resultado del merge realizado en GitHub.
 
 ## Workflow 4
 
