@@ -209,12 +209,12 @@ git pull origin main
 
 ## Workflow 4
 
-Todos los días a las 02:00 AM UTC se ejecuta automáticamente este flujo de trabajo mediante un disparador programado (`schedule` con cron)[cite: 2]. Además, se ha habilitado la opción de lanzarlo manualmente mediante `workflow_dispatch`[cite: 2].
+Todos los días a las 02:00 AM UTC se ejecuta automáticamente este flujo de trabajo mediante un disparador programado (`schedule` con cron). Además, se ha habilitado la opción de lanzarlo manualmente mediante `workflow_dispatch`.
 
 El flujo de trabajo se divide en los siguientes pasos:
 
-1. **Pruebas de sistema multiplataforma:** Se despliega la aplicación y se ejecutan las pruebas de sistema sobre una matriz combinada de distintos sistemas operativos y navegadores[cite: 2]. Específicamente, se comprueba el funcionamiento en Chrome y Firefox (sobre Linux, Windows y MacOS), en Edge (sobre Windows) y en Safari (sobre MacOS)[cite: 1, 2].
-2. **Publicación de la imagen Docker (Nightly):** Si todas las pruebas en los diferentes entornos pasan correctamente, el workflow avanza a un segundo trabajo (`publish-nightly`)[cite: 1, 2]. Este paso construye y publica automáticamente una nueva imagen Docker de la aplicación en Docker Hub[cite: 1, 2]. La imagen se etiqueta con el formato `nightly-fecha`, correspondiendo la fecha al día en que se generó (por ejemplo, `nightly-2026-04-30`)[cite: 1, 2].
+1. **Pruebas de sistema multiplataforma:** Se despliega la aplicación y se ejecutan las pruebas de sistema sobre una matriz combinada de distintos sistemas operativos y navegadores. Específicamente, se comprueba el funcionamiento en Chrome y Firefox (sobre Linux, Windows y MacOS), en Edge (sobre Windows) y en Safari (sobre MacOS).
+2. **Publicación de la imagen Docker (Nightly):** Si todas las pruebas en los diferentes entornos pasan correctamente, el workflow avanza a un segundo trabajo (`publish-nightly`). Este paso construye y publica automáticamente una nueva imagen Docker de la aplicación en Docker Hub. La imagen se etiqueta con el formato `nightly-fecha`, correspondiendo la fecha al día en que se generó (por ejemplo, `nightly-2026-04-30`).
 
 ### Enlaces de comprobación
 
