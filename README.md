@@ -109,9 +109,10 @@ En cuanto a responsabilidades, en el equipo yo me encargaba del sonarQube. En cu
 
 | Tarea 2 | Alumno/es asignado/s | Commits asociado |
 |:--- |:--- |:--- |
-| feature-1 | [Nombre 1], [Nombre 2] | [Commit 1](URL_commit_1), [Commit 2](URL_commit_2) |
-| feature-2 | [Nombre 3], [Nombre 4] | [Commit 3](URL_commit_3), [Commit 4](URL_commit_4) |
-| refactoring-1 | [Nombre 5] | [Commit 5](URL_commit_5) ... |
+| Workflow 1 | [Vicente Navas Martínez] | [Commit](URL_commit_1) |
+| Workflow 2 | [Vicente Navas Martínez] | [Commit](URL_commit_1) |
+| Workflow 3 | [Alejandro Arias Souto] | [Commit](URL_commit_1) |
+| Workflow 4 | [Álvaro Gonzalez Gonzalez] | [Commit](URL_commit_1) |
 
 | Tarea 3| Alumno/es asignado/s | Commits asociado |
 |:--- |:--- |:--- |
