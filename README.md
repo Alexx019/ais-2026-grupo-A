@@ -117,8 +117,8 @@ En cuanto a responsabilidades, en el equipo yo me encargaba del sonarQube. En cu
 | Tarea 3| Alumno/es asignado/s | Commits asociado |
 |:--- |:--- |:--- |
 | feature-1 | [Rodrigo Wiznez Valiente] , [Vicente Navas Martínez] | [Commit 1](https://github.com/Alexx019/ais-2026-grupo-A/commit/e41be157727b76e4e542a580be4cce16cf707f03) , [Commit 2](https://github.com/Alexx019/ais-2026-grupo-A/commit/5707ff38c7cd498d6fa3e98f1129caf4ede1601f) |
-| feature-2 | [Pablo Cristina Jiménez ] , [Pablo Cristina Jiménez ] | [Commit 3](https://github.com/Alexx019/ais-2026-grupo-A/commit/7b90d587abbd5c678c34a27a72bb66966cadd689) , [Commit 4](https://github.com/Alexx019/ais-2026-grupo-A/commit/5af094971bbbe75265420083fccb0352c9d9b85f) |
-| refactoring-1 | [Alejandro Arias Souto] | [Commit 5](URL_commit_5) |
+| feature-2 | [Pablo Cristina Jiménez ] , [Pablo Cristina Jiménez ] | [Commit 1](https://github.com/Alexx019/ais-2026-grupo-A/commit/7b90d587abbd5c678c34a27a72bb66966cadd689) , [Commit 2](https://github.com/Alexx019/ais-2026-grupo-A/commit/5af094971bbbe75265420083fccb0352c9d9b85f) |
+| refactoring-1 | [Alejandro Arias Souto] | [Commit](URL_commit_5) |
 ### Pasos seguidos
 
 Una vez creados los workflows y funcionando estos, pasamos a crear la nueva funcionalidad utilizando GithubFlow:
