@@ -219,4 +219,4 @@ El flujo de trabajo se divide en los siguientes pasos:
 ### Enlaces de comprobación
 
 - [Última ejecución del Workflow 4 en GitHub Actions](https://github.com/Alexx019/ais-2026-grupo-A/actions/runs/25149169024/job/73715530606)
-- [Artefacto generado en Docker Hub (banking-app:nightly-fecha)](URL_imagen_dockerhub)
+- [Artefacto generado en Docker Hub (banking-app:nightly-fecha)](https://hub.docker.com/repository/docker/alexx019/banking-app/tags/nightly-2026-04-30)
